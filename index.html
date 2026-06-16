@@ -2,140 +2,159 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
 <title>NCMN 미디어 장비 대여 신청서</title>
+<meta property="og:title" content="NCMN 미디어 장비 대여 신청서"/>
+<meta property="og:description" content="NCMN 미디어팀 장비 대여 신청서입니다. 아래 양식을 작성해 제출해주세요."/>
+<meta property="og:image" content="https://ncmn-media.github.io/ncmn-rental-form/logo.png"/>
+<meta property="og:url" content="https://ncmn-media.github.io/ncmn-rental-form"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="NCMN 미디어 장비 대여 신청서"/>
+<meta name="twitter:description" content="NCMN 미디어팀 장비 대여 신청서입니다."/>
+<meta name="twitter:image" content="https://ncmn-media.github.io/ncmn-rental-form/logo.png"/>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; min-height: 100vh; color: #1d1d1f; }
-.form-wrap { max-width: 600px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; min-height: 100vh; color: #1d1d1f; font-size: 16px; }
+.form-wrap { max-width: 600px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
 .form-header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #e0e0e0; text-align: center; }
-.org-label { font-size: 12px; color: #888; margin-bottom: 4px; }
-.form-title { font-size: 22px; font-weight: 600; color: #1d1d1f; }
-.form-subtitle { font-size: 12px; color: #888; margin-top: 5px; }
-.section { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 1.1rem; margin-bottom: 0.75rem; }
-.section-title { font-size: 12px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.9rem; }
-.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.org-label { font-size: 13px; color: #888; margin-bottom: 4px; }
+.form-title { font-size: 22px; font-weight: 700; color: #1d1d1f; }
+.form-subtitle { font-size: 13px; color: #888; margin-top: 6px; }
+.section { background: #fff; border: 1px solid #e8e8e8; border-radius: 14px; padding: 1.2rem; margin-bottom: 0.85rem; }
+.section-title { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .field:last-child { margin-bottom: 0; }
-.field label { font-size: 12px; color: #666; }
+.field label { font-size: 14px; color: #555; font-weight: 500; }
 .field input, .field textarea {
-  border-radius: 8px; width: 100%; font-size: 14px; padding: 9px 12px;
+  border-radius: 10px; width: 100%; font-size: 16px; padding: 12px 14px;
   border: 1px solid #d0d0d0; background: #fff; color: #1d1d1f; outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s; -webkit-appearance: none; appearance: none;
 }
-.field input:focus, .field textarea:focus { border-color: #0071e3; }
-.field textarea { resize: vertical; min-height: 72px; font-family: inherit; }
+.field input:focus, .field textarea:focus { border-color: #0071e3; box-shadow: 0 0 0 3px rgba(0,113,227,0.12); }
+.field textarea { resize: vertical; min-height: 80px; font-family: inherit; line-height: 1.5; }
 .req { color: #e05; margin-left: 2px; }
-.date-block { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.date-label { font-size: 12px; color: #555; margin-bottom: 5px; font-weight: 600; }
-.date-sep { border: none; border-top: 1px dashed #e0e0e0; margin: 12px 0; }
+
+/* 날짜/시간 — 모바일에서 위아래로 */
+.date-label { font-size: 14px; color: #555; margin-bottom: 8px; font-weight: 600; }
+.date-sep { border: none; border-top: 1px dashed #e0e0e0; margin: 14px 0; }
+.date-row { display: flex; flex-direction: column; gap: 10px; }
+.date-row .field { margin: 0; }
+.date-row .field label { font-size: 13px; color: #999; font-weight: 400; }
 
 /* 드롭다운 */
 .ms-wrap { position: relative; }
 .ms-trigger {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 9px 12px; border: 1px solid #d0d0d0; border-radius: 8px;
-  cursor: pointer; background: #fff; font-size: 14px; color: #999;
-  gap: 8px; min-height: 38px; user-select: none; transition: border-color 0.15s;
+  padding: 12px 14px; border: 1px solid #d0d0d0; border-radius: 10px;
+  cursor: pointer; background: #fff; font-size: 16px; color: #999;
+  gap: 8px; min-height: 48px; user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .ms-trigger.has-val { color: #1d1d1f; }
-.ms-trigger:hover { border-color: #aaa; }
 .ms-trigger-text { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .ms-arrow { flex-shrink: 0; transition: transform 0.18s; color: #aaa; }
 .ms-trigger.open .ms-arrow { transform: rotate(180deg); }
 .ms-dd {
   display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  background: #fff; border: 1px solid #d8d8d8; border-radius: 10px; z-index: 200;
-  max-height: 240px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  background: #fff; border: 1px solid #d8d8d8; border-radius: 12px; z-index: 200;
+  max-height: 260px; overflow-y: auto; box-shadow: 0 8px 28px rgba(0,0,0,0.13);
 }
 .ms-dd.open { display: block; }
 .ms-opt {
-  display: flex; align-items: center; gap: 10px; padding: 9px 12px;
-  cursor: pointer; font-size: 13px; color: #1d1d1f; transition: background 0.1s;
+  display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+  cursor: pointer; font-size: 15px; color: #1d1d1f;
+  border-bottom: 1px solid #f0f0f0; -webkit-tap-highlight-color: transparent;
 }
-.ms-opt:hover { background: #f5f5f7; }
+.ms-opt:last-child { border-bottom: none; }
+.ms-opt:active { background: #f0f0f0; }
 .ms-opt.sel { background: #e8f0fe; }
 .opt-cb {
-  width: 16px; height: 16px; border: 1.5px solid #ccc; border-radius: 4px;
+  width: 20px; height: 20px; border: 1.5px solid #ccc; border-radius: 5px;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  background: #fff; font-size: 10px; color: transparent; transition: all 0.15s;
+  background: #fff; font-size: 12px; color: transparent;
 }
 .ms-opt.sel .opt-cb { background: #0071e3; border-color: #0071e3; color: white; }
-.sel-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.sel-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .sel-tag {
-  display: inline-flex; align-items: center; gap: 4px; font-size: 11px;
-  background: #e8f0fe; border: 1px solid #c5d8fa; border-radius: 6px;
-  padding: 3px 8px; color: #0058c4;
+  display: inline-flex; align-items: center; gap: 5px; font-size: 13px;
+  background: #e8f0fe; border: 1px solid #c5d8fa; border-radius: 8px;
+  padding: 5px 10px; color: #0058c4;
 }
-.sel-tag-x { cursor: pointer; font-size: 10px; }
-.qty-sec { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; display: flex; flex-wrap: wrap; gap: 6px; }
+.sel-tag-x { cursor: pointer; font-size: 12px; padding: 0 2px; }
+.qty-sec { margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; display: flex; flex-wrap: wrap; gap: 8px; }
 .qty-tag {
-  display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
-  background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 8px;
+  display: inline-flex; align-items: center; gap: 8px; font-size: 13px;
+  background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 8px; padding: 6px 10px;
 }
 .qty-tag input[type="number"] {
-  width: 38px; font-size: 12px; padding: 2px 4px; border-radius: 4px;
+  width: 44px; font-size: 15px; padding: 3px 5px; border-radius: 6px;
   border: 1px solid #ccc; text-align: center; background: #fff;
+  -webkit-appearance: none; appearance: none;
 }
-.qty-lbl { font-size: 11px; color: #666; }
+.qty-lbl { font-size: 13px; color: #555; }
 
 /* 동의 */
 .agree-box {
-  background: #f9f9f9; border-radius: 8px; padding: 14px 16px;
-  margin-bottom: 12px; font-size: 12px; color: #666; line-height: 1.8;
+  background: #f9f9f9; border-radius: 10px; padding: 14px 16px;
+  margin-bottom: 14px; font-size: 13px; color: #666; line-height: 1.9;
   border: 1px solid #eee;
 }
-.agree-item { margin-bottom: 12px; }
+.agree-item { margin-bottom: 13px; }
 .agree-item:last-child { margin-bottom: 0; }
-.agree-ttl { font-weight: 700; color: #333; font-size: 12px; }
-.agree-note { font-size: 11px; font-style: italic; color: #888; margin-top: 3px; line-height: 1.6; }
-.agree-sep { border: none; border-top: 1px solid #e8e8e8; margin: 12px 0; }
-.agree-ext-ttl { font-weight: 700; color: #333; font-size: 12px; margin-bottom: 4px; }
-.agree-row { display: flex; align-items: center; gap: 10px; cursor: pointer; padding-top: 10px; }
+.agree-ttl { font-weight: 700; color: #333; font-size: 13px; }
+.agree-note { font-size: 12px; font-style: italic; color: #888; margin-top: 4px; line-height: 1.6; }
+.agree-sep { border: none; border-top: 1px solid #e8e8e8; margin: 13px 0; }
+.agree-ext-ttl { font-weight: 700; color: #333; font-size: 13px; margin-bottom: 4px; }
+.agree-row { display: flex; align-items: center; gap: 12px; cursor: pointer; padding-top: 12px; -webkit-tap-highlight-color: transparent; }
 .agree-row input { display: none; }
 .agree-cb-box {
-  width: 18px; height: 18px; border: 1.5px solid #ccc; border-radius: 5px;
+  width: 22px; height: 22px; border: 1.5px solid #ccc; border-radius: 6px;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  background: #fff; font-size: 11px; color: transparent; transition: all 0.15s;
+  background: #fff; font-size: 13px; color: transparent;
 }
 .agree-row.chk .agree-cb-box { background: #0071e3; border-color: #0071e3; color: white; }
-.agree-lbl { font-size: 13px; color: #333; }
+.agree-lbl { font-size: 14px; color: #333; line-height: 1.4; }
 
-/* 제출 */
+/* 제출 버튼 */
 .submit-area { display: flex; justify-content: center; margin-top: 1.5rem; }
 .btn-submit {
-  padding: 13px 0; font-size: 15px; font-weight: 700; border-radius: 10px;
+  padding: 16px 0; font-size: 17px; font-weight: 700; border-radius: 12px;
   background: #0071e3; border: none; color: #fff; cursor: pointer;
-  width: 100%; max-width: 300px; transition: background 0.15s;
+  width: 100%; transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
-.btn-submit:hover { background: #0058c4; }
+.btn-submit:active { background: #0058c4; }
 .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
 
-/* 완료 화면 */
-.success-screen { display: none; text-align: center; padding: 4rem 1rem; }
-.success-icon { font-size: 52px; margin-bottom: 1rem; }
-.success-title { font-size: 20px; font-weight: 700; color: #1d1d1f; margin-bottom: 8px; }
-.success-sub { font-size: 14px; color: #666; line-height: 1.7; margin-bottom: 1.5rem; }
+/* 완료 */
+.success-screen { display: none; text-align: center; padding: 5rem 1rem; }
+.success-icon { font-size: 56px; margin-bottom: 1rem; }
+.success-title { font-size: 22px; font-weight: 700; color: #1d1d1f; margin-bottom: 10px; }
+.success-sub { font-size: 15px; color: #666; line-height: 1.7; margin-bottom: 2rem; }
 .btn-again {
-  padding: 10px 28px; font-size: 13px; border-radius: 8px;
+  padding: 12px 32px; font-size: 15px; border-radius: 10px;
   background: none; border: 1px solid #ccc; color: #666; cursor: pointer;
 }
-.btn-again:hover { background: #f5f5f7; }
 
 /* 토스트 */
 .toast {
-  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: #1d1d1f; color: #fff; font-size: 13px; padding: 10px 22px;
-  border-radius: 10px; opacity: 0; transition: all 0.25s; pointer-events: none; z-index: 999; white-space: nowrap;
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #1d1d1f; color: #fff; font-size: 14px; padding: 12px 24px;
+  border-radius: 12px; opacity: 0; transition: all 0.25s; pointer-events: none;
+  z-index: 999; white-space: nowrap; max-width: 90vw; text-align: center;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* 로딩 스피너 */
-.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+.spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
-
 <div class="form-wrap">
   <div id="form-body">
     <div class="form-header">
@@ -146,23 +165,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
     <div class="section">
       <div class="section-title">👤 신청자 정보</div>
-      <div class="field"><label>이름<span class="req">*</span></label><input type="text" id="f-name" placeholder="홍길동"/></div>
+      <div class="field"><label>이름<span class="req">*</span></label><input type="text" id="f-name" placeholder="홍길동" autocomplete="name"/></div>
       <div class="field"><label>사역팀<span class="req">*</span></label><input type="text" id="f-team" placeholder="사역 팀명을 입력해주세요"/></div>
-      <div class="field"><label>연락처<span class="req">*</span></label><input type="tel" id="f-phone" placeholder="010-0000-0000"/></div>
+      <div class="field"><label>연락처<span class="req">*</span></label><input type="tel" id="f-phone" placeholder="010-0000-0000" autocomplete="tel"/></div>
     </div>
 
     <div class="section">
       <div class="section-title">📅 대여 기간</div>
       <p class="date-label">대여일<span class="req">*</span></p>
-      <div class="date-block">
-        <div class="field" style="margin:0"><label style="font-size:11px;color:#999">날짜</label><input type="date" id="f-rent-date"/></div>
-        <div class="field" style="margin:0"><label style="font-size:11px;color:#999">시간</label><input type="time" id="f-rent-time"/></div>
+      <div class="date-row">
+        <div class="field"><label>날짜</label><input type="date" id="f-rent-date"/></div>
+        <div class="field"><label>시간</label><input type="time" id="f-rent-time"/></div>
       </div>
       <hr class="date-sep"/>
       <p class="date-label">반납일<span class="req">*</span></p>
-      <div class="date-block">
-        <div class="field" style="margin:0"><label style="font-size:11px;color:#999">날짜</label><input type="date" id="f-return-date"/></div>
-        <div class="field" style="margin:0"><label style="font-size:11px;color:#999">시간</label><input type="time" id="f-return-time"/></div>
+      <div class="date-row">
+        <div class="field"><label>날짜</label><input type="date" id="f-return-date"/></div>
+        <div class="field"><label>시간</label><input type="time" id="f-return-time"/></div>
       </div>
     </div>
 
@@ -173,7 +192,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         <div class="ms-wrap">
           <div class="ms-trigger" id="eq-trigger" onclick="toggleDD('eq')">
             <span class="ms-trigger-text" id="eq-trigger-text">장비를 선택해주세요</span>
-            <svg class="ms-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg class="ms-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="ms-dd" id="eq-dd"></div>
         </div>
@@ -188,7 +207,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         <div class="ms-wrap">
           <div class="ms-trigger" id="loc-trigger" onclick="toggleDD('loc')">
             <span class="ms-trigger-text" id="loc-trigger-text">사용 장소를 선택해주세요</span>
-            <svg class="ms-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg class="ms-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="ms-dd" id="loc-dd"></div>
         </div>
@@ -225,11 +244,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         </div>
         <hr class="agree-sep"/>
         <div class="agree-ext-ttl">외부 대여 관련 안내</div>
-        <div style="font-size:12px;color:#888;margin-top:4px;">외부 대여는 액팅리더 요청 외에는 반출이 제한됩니다.</div>
+        <div style="font-size:13px;color:#888;margin-top:4px;">외부 대여는 액팅리더 요청 외에는 반출이 제한됩니다.</div>
       </div>
       <label class="agree-row" id="agree-row" onclick="toggleAgree()">
         <input type="checkbox"/>
-        <div class="agree-cb-box" id="agree-cb-ui">✓</div>
+        <div class="agree-cb-box">✓</div>
         <span class="agree-lbl">위 내용을 모두 확인하였으며, 동의합니다.<span class="req">*</span></span>
       </label>
     </div>
@@ -239,7 +258,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
   </div>
 
-  <!-- 완료 화면 -->
   <div class="success-screen" id="success-screen">
     <div class="success-icon">✅</div>
     <div class="success-title">신청서가 제출됐어요!</div>
@@ -251,10 +269,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// ★ 여기에 Google Apps Script 웹앱 URL을 붙여넣으세요 ★
-// 아래 설정 방법을 따라 URL을 받은 후 교체해주세요.
-// ============================================================
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCSr8EY_EALJgWxf5Qi4J-Ho3XPvVLXMv3M6a0q3nLX267DU-YTS4tXTQVTsJOaCZoVQ/exec';
 
 const equipList = [
@@ -271,7 +285,6 @@ const locList = [
 const selEquip = new Set();
 let selLoc = '', agreeChecked = false, agreeToggling = false;
 
-// 드롭다운
 function toggleDD(type) {
   const tr = document.getElementById(type+'-trigger');
   const dd = document.getElementById(type+'-dd');
@@ -363,7 +376,6 @@ function toggleAgree() {
   setTimeout(()=>{agreeToggling=false;},100);
 }
 
-// 제출
 async function submitForm() {
   const name=document.getElementById('f-name').value.trim();
   const team=document.getElementById('f-team').value.trim();
@@ -387,33 +399,31 @@ async function submitForm() {
     equipLines.push(n+' x'+(tag?tag.querySelector('input').value:1));
   });
 
-  const btn = document.getElementById('btn-submit');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>제출 중...';
+  const btn=document.getElementById('btn-submit');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>제출 중...';
 
-  const payload = {
-    name, team, phone,
-    rentDate: rentDate+(rentTime?' '+rentTime:''),
-    returnDate: returnDate+(returnTime?' '+returnTime:''),
-    equipment: equipLines.join(', '),
-    location: selLoc,
-    purpose, notes,
-    submittedAt: new Date().toLocaleString('ko-KR')
+  const payload={
+    name,team,phone,
+    rentDate:rentDate+(rentTime?' '+rentTime:''),
+    returnDate:returnDate+(returnTime?' '+returnTime:''),
+    equipment:equipLines.join(', '),
+    location:selLoc,purpose,notes,
+    submittedAt:new Date().toLocaleString('ko-KR')
   };
 
   try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
     });
     document.getElementById('form-body').style.display='none';
     document.getElementById('success-screen').style.display='block';
   } catch(e) {
     showToast('❌ 제출 중 오류가 발생했어요. 다시 시도해주세요.');
-    btn.disabled = false;
-    btn.innerHTML = '신청서 제출';
+    btn.disabled=false;
+    btn.innerHTML='신청서 제출';
   }
 }
 
