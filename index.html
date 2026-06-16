@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NCMN 미디어 장비 대여 신청서</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; min-height: 100vh; color: #1d1d1f; }
+.form-wrap { max-width: 600px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+.form-header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #e0e0e0; text-align: center; }
+.org-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+.form-title { font-size: 22px; font-weight: 600; color: #1d1d1f; }
+.form-subtitle { font-size: 12px; color: #888; margin-top: 5px; }
+.section { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 1.1rem; margin-bottom: 0.75rem; }
+.section-title { font-size: 12px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.9rem; }
+.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.field:last-child { margin-bottom: 0; }
+.field label { font-size: 12px; color: #666; }
+.field input, .field textarea {
+  border-radius: 8px; width: 100%; font-size: 14px; padding: 9px 12px;
+  border: 1px solid #d0d0d0; background: #fff; color: #1d1d1f; outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field textarea:focus { border-color: #0071e3; }
+.field textarea { resize: vertical; min-height: 72px; font-family: inherit; }
+.req { color: #e05; margin-left: 2px; }
+.date-block { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.date-label { font-size: 12px; color: #555; margin-bottom: 5px; font-weight: 600; }
+.date-sep { border: none; border-top: 1px dashed #e0e0e0; margin: 12px 0; }
+
+/* 드롭다운 */
+.ms-wrap { position: relative; }
+.ms-trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px; border: 1px solid #d0d0d0; border-radius: 8px;
+  cursor: pointer; background: #fff; font-size: 14px; color: #999;
+  gap: 8px; min-height: 38px; user-select: none; transition: border-color 0.15s;
+}
+.ms-trigger.has-val { color: #1d1d1f; }
+.ms-trigger:hover { border-color: #aaa; }
+.ms-trigger-text { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ms-arrow { flex-shrink: 0; transition: transform 0.18s; color: #aaa; }
+.ms-trigger.open .ms-arrow { transform: rotate(180deg); }
+.ms-dd {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: #fff; border: 1px solid #d8d8d8; border-radius: 10px; z-index: 200;
+  max-height: 240px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.ms-dd.open { display: block; }
+.ms-opt {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+  cursor: pointer; font-size: 13px; color: #1d1d1f; transition: background 0.1s;
+}
+.ms-opt:hover { background: #f5f5f7; }
+.ms-opt.sel { background: #e8f0fe; }
+.opt-cb {
+  width: 16px; height: 16px; border: 1.5px solid #ccc; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: #fff; font-size: 10px; color: transparent; transition: all 0.15s;
+}
+.ms-opt.sel .opt-cb { background: #0071e3; border-color: #0071e3; color: white; }
+.sel-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.sel-tag {
+  display: inline-flex; align-items: center; gap: 4px; font-size: 11px;
+  background: #e8f0fe; border: 1px solid #c5d8fa; border-radius: 6px;
+  padding: 3px 8px; color: #0058c4;
+}
+.sel-tag-x { cursor: pointer; font-size: 10px; }
+.qty-sec { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; display: flex; flex-wrap: wrap; gap: 6px; }
+.qty-tag {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
+  background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 8px;
+}
+.qty-tag input[type="number"] {
+  width: 38px; font-size: 12px; padding: 2px 4px; border-radius: 4px;
+  border: 1px solid #ccc; text-align: center; background: #fff;
+}
+.qty-lbl { font-size: 11px; color: #666; }
+
+/* 동의 */
+.agree-box {
+  background: #f9f9f9; border-radius: 8px; padding: 14px 16px;
+  margin-bottom: 12px; font-size: 12px; color: #666; line-height: 1.8;
+  border: 1px solid #eee;
+}
+.agree-item { margin-bottom: 12px; }
+.agree-item:last-child { margin-bottom: 0; }
+.agree-ttl { font-weight: 700; color: #333; font-size: 12px; }
+.agree-note { font-size: 11px; font-style: italic; color: #888; margin-top: 3px; line-height: 1.6; }
+.agree-sep { border: none; border-top: 1px solid #e8e8e8; margin: 12px 0; }
+.agree-ext-ttl { font-weight: 700; color: #333; font-size: 12px; margin-bottom: 4px; }
+.agree-row { display: flex; align-items: center; gap: 10px; cursor: pointer; padding-top: 10px; }
+.agree-row input { display: none; }
+.agree-cb-box {
+  width: 18px; height: 18px; border: 1.5px solid #ccc; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: #fff; font-size: 11px; color: transparent; transition: all 0.15s;
+}
+.agree-row.chk .agree-cb-box { background: #0071e3; border-color: #0071e3; color: white; }
+.agree-lbl { font-size: 13px; color: #333; }
+
+/* 제출 */
+.submit-area { display: flex; justify-content: center; margin-top: 1.5rem; }
+.btn-submit {
+  padding: 13px 0; font-size: 15px; font-weight: 700; border-radius: 10px;
+  background: #0071e3; border: none; color: #fff; cursor: pointer;
+  width: 100%; max-width: 300px; transition: background 0.15s;
+}
+.btn-submit:hover { background: #0058c4; }
+.btn-submit:disabled { background: #aaa; cursor: not-allowed; }
+
+/* 완료 화면 */
+.success-screen { display: none; text-align: center; padding: 4rem 1rem; }
+.success-icon { font-size: 52px; margin-bottom: 1rem; }
+.success-title { font-size: 20px; font-weight: 700; color: #1d1d1f; margin-bottom: 8px; }
+.success-sub { font-size: 14px; color: #666; line-height: 1.7; margin-bottom: 1.5rem; }
+.btn-again {
+  padding: 10px 28px; font-size: 13px; border-radius: 8px;
+  background: none; border: 1px solid #ccc; color: #666; cursor: pointer;
+}
+.btn-again:hover { background: #f5f5f7; }
+
+/* 토스트 */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #1d1d1f; color: #fff; font-size: 13px; padding: 10px 22px;
+  border-radius: 10px; opacity: 0; transition: all 0.25s; pointer-events: none; z-index: 999; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* 로딩 스피너 */
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="form-wrap">
+  <div id="form-body">
+    <div class="form-header">
+      <p class="org-label">NCMN</p>
+      <div class="form-title">미디어 장비 대여 신청서</div>
+      <p class="form-subtitle">모든 필수 항목(<span style="color:#e05">*</span>)을 작성 후 제출해주세요.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">👤 신청자 정보</div>
+      <div class="field"><label>이름<span class="req">*</span></label><input type="text" id="f-name" placeholder="홍길동"/></div>
+      <div class="field"><label>사역팀<span class="req">*</span></label><input type="text" id="f-team" placeholder="사역 팀명을 입력해주세요"/></div>
+      <div class="field"><label>연락처<span class="req">*</span></label><input type="tel" id="f-phone" placeholder="010-0000-0000"/></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📅 대여 기간</div>
+      <p class="date-label">대여일<span class="req">*</span></p>
+      <div class="date-block">
+        <div class="field" style="margin:0"><label style="font-size:11px;color:#999">날짜</label><input type="date" id="f-rent-date"/></div>
+        <div class="field" style="margin:0"><label style="font-size:11px;color:#999">시간</label><input type="time" id="f-rent-time"/></div>
+      </div>
+      <hr class="date-sep"/>
+      <p class="date-label">반납일<span class="req">*</span></p>
+      <div class="date-block">
+        <div class="field" style="margin:0"><label style="font-size:11px;color:#999">날짜</label><input type="date" id="f-return-date"/></div>
+        <div class="field" style="margin:0"><label style="font-size:11px;color:#999">시간</label><input type="time" id="f-return-time"/></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📷 대여 장비 목록<span class="req">*</span></div>
+      <div class="field" style="margin:0">
+        <label>장비 선택 (복수 선택 가능)</label>
+        <div class="ms-wrap">
+          <div class="ms-trigger" id="eq-trigger" onclick="toggleDD('eq')">
+            <span class="ms-trigger-text" id="eq-trigger-text">장비를 선택해주세요</span>
+            <svg class="ms-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="ms-dd" id="eq-dd"></div>
+        </div>
+        <div class="sel-tags" id="eq-tags"></div>
+        <div id="eq-qty" style="display:none"><div class="qty-sec" id="qty-con"></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📍 사용 장소<span class="req">*</span></div>
+      <div class="field" style="margin:0">
+        <div class="ms-wrap">
+          <div class="ms-trigger" id="loc-trigger" onclick="toggleDD('loc')">
+            <span class="ms-trigger-text" id="loc-trigger-text">사용 장소를 선택해주세요</span>
+            <svg class="ms-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="ms-dd" id="loc-dd"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📝 사용 목적</div>
+      <div class="field" style="margin:0">
+        <label>사용 목적<span class="req">*</span></label>
+        <textarea id="f-purpose" placeholder="어떤 행사나 사역에 사용하실 예정인지 간략하게 적어주세요."></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">💬 기타 사항</div>
+      <div class="field" style="margin:0">
+        <label>추가 요청 또는 참고 사항</label>
+        <textarea id="f-notes" placeholder="특이사항, 추가 요청, 기타 문의 사항을 작성해주세요."></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">✅ 대여 동의</div>
+      <div class="agree-box">
+        <div class="agree-item"><div class="agree-ttl">1. 장비대여 반납일을 지켜주세요.</div></div>
+        <div class="agree-item">
+          <div class="agree-ttl">2. 장비 훼손 되지 않게 조심히 다뤄주세요.</div>
+          <div class="agree-note">안전사고 및 기기고장, 분실, 파손 등 사용상의 부주의나 과실로 인한 사고에 대해서는 해당 사역팀에 장비 수리비 비용부담과 책임이 지게 됩니다.</div>
+        </div>
+        <div class="agree-item">
+          <div class="agree-ttl">3. 장비대여는 일정한 기간 동안만 가능합니다.</div>
+          <div class="agree-note">사역이 끝나면 반납일에 맞게 바로 반납해주세요.</div>
+        </div>
+        <hr class="agree-sep"/>
+        <div class="agree-ext-ttl">외부 대여 관련 안내</div>
+        <div style="font-size:12px;color:#888;margin-top:4px;">외부 대여는 액팅리더 요청 외에는 반출이 제한됩니다.</div>
+      </div>
+      <label class="agree-row" id="agree-row" onclick="toggleAgree()">
+        <input type="checkbox"/>
+        <div class="agree-cb-box" id="agree-cb-ui">✓</div>
+        <span class="agree-lbl">위 내용을 모두 확인하였으며, 동의합니다.<span class="req">*</span></span>
+      </label>
+    </div>
+
+    <div class="submit-area">
+      <button class="btn-submit" id="btn-submit" onclick="submitForm()">신청서 제출</button>
+    </div>
+  </div>
+
+  <!-- 완료 화면 -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">신청서가 제출됐어요!</div>
+    <div class="success-sub">담당자 확인 후 연락드릴게요.<br/>감사합니다 🙏</div>
+    <button class="btn-again" onclick="resetForm()">다시 신청하기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// ★ 여기에 Google Apps Script 웹앱 URL을 붙여넣으세요 ★
+// 아래 설정 방법을 따라 URL을 받은 후 교체해주세요.
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCSr8EY_EALJgWxf5Qi4J-Ho3XPvVLXMv3M6a0q3nLX267DU-YTS4tXTQVTsJOaCZoVQ/exec';
+
+const equipList = [
+  "촬영용 카메라","스틸(사진) 카메라","카메라 삼각대","촬영 무선 마이크",
+  "저장장치 (SSD 외장하드)","SD 메모리카드","SDI 케이블 (카메라 송출 케이블)",
+  "HDMI 케이블","Apple TV","기타"
+];
+const locList = [
+  "서울 비전센터 B2층","서울 비전센터 2층","서울 비전센터 3층",
+  "서울 비전센터 5층 회의실","고성 비전센터","영등포 2층",
+  "해외사역","외부 (사역 액팅 요청 확인 필요)"
+];
+
+const selEquip = new Set();
+let selLoc = '', agreeChecked = false, agreeToggling = false;
+
+// 드롭다운
+function toggleDD(type) {
+  const tr = document.getElementById(type+'-trigger');
+  const dd = document.getElementById(type+'-dd');
+  const isOpen = dd.classList.contains('open');
+  document.querySelectorAll('.ms-dd.open').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.ms-trigger.open').forEach(t=>t.classList.remove('open'));
+  if (!isOpen) { dd.classList.add('open'); tr.classList.add('open'); }
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ms-wrap')) {
+    document.querySelectorAll('.ms-dd.open').forEach(d=>d.classList.remove('open'));
+    document.querySelectorAll('.ms-trigger.open').forEach(t=>t.classList.remove('open'));
+  }
+});
+
+function buildEquipDD() {
+  const dd = document.getElementById('eq-dd'); dd.innerHTML = '';
+  equipList.forEach(eq => {
+    const opt = document.createElement('div');
+    opt.className = 'ms-opt'; opt.dataset.val = eq;
+    opt.innerHTML = `<div class="opt-cb">✓</div><span>${eq}</span>`;
+    opt.addEventListener('click', e => { e.stopPropagation(); toggleEquip(eq, opt); });
+    dd.appendChild(opt);
+  });
+}
+function toggleEquip(name, opt) {
+  if (selEquip.has(name)) { selEquip.delete(name); opt.classList.remove('sel'); }
+  else { selEquip.add(name); opt.classList.add('sel'); }
+  updateEqTrigger(); updateEqTags(); updateQty();
+}
+function updateEqTrigger() {
+  const tr = document.getElementById('eq-trigger'), tx = document.getElementById('eq-trigger-text');
+  if (selEquip.size===0) { tx.textContent='장비를 선택해주세요'; tr.classList.remove('has-val'); }
+  else { tx.textContent=selEquip.size+'개 선택됨'; tr.classList.add('has-val'); }
+}
+function updateEqTags() {
+  const wrap = document.getElementById('eq-tags'); wrap.innerHTML='';
+  selEquip.forEach(name => {
+    const t=document.createElement('div'); t.className='sel-tag';
+    const s=name.length>12?name.slice(0,12)+'…':name;
+    t.innerHTML=`<span>${s}</span><span class="sel-tag-x" onclick="removeEquip('${name.replace(/'/g,"\\'")}')">✕</span>`;
+    wrap.appendChild(t);
+  });
+}
+function removeEquip(name) {
+  selEquip.delete(name);
+  const opt=document.querySelector(`#eq-dd .ms-opt[data-val="${name}"]`);
+  if(opt) opt.classList.remove('sel');
+  updateEqTrigger(); updateEqTags(); updateQty();
+}
+function updateQty() {
+  const wrap=document.getElementById('eq-qty'), con=document.getElementById('qty-con');
+  if(selEquip.size===0){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const ex={};
+  con.querySelectorAll('.qty-tag').forEach(t=>{ex[t.dataset.key]=t.querySelector('input').value;});
+  con.innerHTML='';
+  selEquip.forEach(name=>{
+    const t=document.createElement('div'); t.className='qty-tag'; t.dataset.key=name;
+    const s=name.length>10?name.slice(0,10)+'…':name;
+    t.innerHTML=`<span class="qty-lbl">${s}</span><input type="number" min="1" value="${ex[name]||1}"/>`;
+    con.appendChild(t);
+  });
+}
+function buildLocDD() {
+  const dd=document.getElementById('loc-dd'); dd.innerHTML='';
+  locList.forEach(loc=>{
+    const opt=document.createElement('div');
+    opt.className='ms-opt'; opt.dataset.val=loc;
+    opt.innerHTML=`<div class="opt-cb">✓</div><span>${loc}</span>`;
+    opt.addEventListener('click',e=>{e.stopPropagation();selectLoc(loc);});
+    dd.appendChild(opt);
+  });
+}
+function selectLoc(name) {
+  selLoc=name;
+  document.querySelectorAll('#loc-dd .ms-opt').forEach(o=>o.classList.remove('sel'));
+  const opt=document.querySelector(`#loc-dd .ms-opt[data-val="${name}"]`);
+  if(opt) opt.classList.add('sel');
+  document.getElementById('loc-trigger-text').textContent=name;
+  document.getElementById('loc-trigger').classList.add('has-val');
+  document.getElementById('loc-dd').classList.remove('open');
+  document.getElementById('loc-trigger').classList.remove('open');
+}
+function toggleAgree() {
+  if(agreeToggling) return; agreeToggling=true;
+  agreeChecked=!agreeChecked;
+  document.getElementById('agree-row').classList.toggle('chk',agreeChecked);
+  setTimeout(()=>{agreeToggling=false;},100);
+}
+
+// 제출
+async function submitForm() {
+  const name=document.getElementById('f-name').value.trim();
+  const team=document.getElementById('f-team').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  const rentDate=document.getElementById('f-rent-date').value;
+  const rentTime=document.getElementById('f-rent-time').value;
+  const returnDate=document.getElementById('f-return-date').value;
+  const returnTime=document.getElementById('f-return-time').value;
+  const purpose=document.getElementById('f-purpose').value.trim();
+  const notes=document.getElementById('f-notes').value.trim();
+
+  if(!name||!team||!phone||!rentDate||!returnDate||!purpose){showToast('⚠️ 필수 항목을 모두 입력해주세요.');return;}
+  if(selEquip.size===0){showToast('⚠️ 장비를 최소 1개 선택해주세요.');return;}
+  if(!selLoc){showToast('⚠️ 사용 장소를 선택해주세요.');return;}
+  if(!agreeChecked){showToast('⚠️ 대여 동의에 체크해주세요.');return;}
+
+  const con=document.getElementById('qty-con');
+  const equipLines=[];
+  selEquip.forEach(n=>{
+    const tag=con.querySelector(`.qty-tag[data-key="${n}"]`);
+    equipLines.push(n+' x'+(tag?tag.querySelector('input').value:1));
+  });
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>제출 중...';
+
+  const payload = {
+    name, team, phone,
+    rentDate: rentDate+(rentTime?' '+rentTime:''),
+    returnDate: returnDate+(returnTime?' '+returnTime:''),
+    equipment: equipLines.join(', '),
+    location: selLoc,
+    purpose, notes,
+    submittedAt: new Date().toLocaleString('ko-KR')
+  };
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('form-body').style.display='none';
+    document.getElementById('success-screen').style.display='block';
+  } catch(e) {
+    showToast('❌ 제출 중 오류가 발생했어요. 다시 시도해주세요.');
+    btn.disabled = false;
+    btn.innerHTML = '신청서 제출';
+  }
+}
+
+function resetForm() {
+  ['f-name','f-team','f-phone','f-rent-date','f-rent-time','f-return-date','f-return-time','f-purpose','f-notes']
+    .forEach(id=>{document.getElementById(id).value='';});
+  selEquip.clear(); selLoc=''; agreeChecked=false;
+  buildEquipDD(); buildLocDD();
+  updateEqTrigger(); updateEqTags(); updateQty();
+  document.getElementById('agree-row').classList.remove('chk');
+  document.getElementById('loc-trigger-text').textContent='사용 장소를 선택해주세요';
+  document.getElementById('loc-trigger').classList.remove('has-val');
+  document.getElementById('btn-submit').disabled=false;
+  document.getElementById('btn-submit').innerHTML='신청서 제출';
+  document.getElementById('form-body').style.display='block';
+  document.getElementById('success-screen').style.display='none';
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+buildEquipDD();
+buildLocDD();
+</script>
+</body>
+</html>
