@@ -120,7 +120,12 @@ export default function RentalForm() {
           </button>
         </>
       ) : (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>🎉 신청 완료!</div>
+       <div style={{ textAlign: 'center', marginTop: '50px' }}>
+          <h2>🎉 신청 완료!</h2>
+          <button onClick={() => window.location.reload()} style={{ padding: '10px 20px', marginTop: '20px', background: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+            새로운 신청서 작성하기
+          </button>
+        </div>
       )}
 
       {showModal && (
