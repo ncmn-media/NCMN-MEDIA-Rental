@@ -28,10 +28,13 @@ export default function RentalForm() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.team || !formData.phone || selEquip.size === 0 || !agree) {
-      alert('필수 항목을 모두 입력해주세요.');
-      return;
-    }
+    // 하나씩 체크해서 어디가 문제인지 알림 띄우기
+    if (!formData.name) return alert('이름을 입력해주세요.');
+    if (!formData.team) return alert('사역팀을 입력해주세요.');
+    if (!formData.phone) return alert('연락처를 입력해주세요.');
+    if (!startDate) return alert('대여 시작일을 선택해주세요.');
+    if (selEquip.size === 0) return alert('장비를 선택해주세요.');
+    if (!agree) return alert('규정 동의 체크박스를 눌러주세요.');
     
     try {
       const payload = { 
@@ -41,10 +44,12 @@ export default function RentalForm() {
         equipment: Array.from(selEquip).join(', '), 
         submittedAt: new Date().toLocaleString() 
       };
+
       await addDoc(collection(db, "reservations"), payload);
       setIsSuccess(true);
     } catch (e) {
-      alert('제출 중 오류가 발생했습니다.');
+      console.error(e); // 여기서 에러 확인 가능
+      alert('데이터베이스 연결에 실패했습니다. 환경 변수를 확인해주세요.');
     }
   };
 
@@ -99,12 +104,17 @@ export default function RentalForm() {
           </div>
 
           {/* 동의 체크박스 (하나로 정리) */}
-          <div className="field" style={{ marginTop: '20px', marginBottom: '20px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px' }}>
-              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
-              <span>[필수] 대여 규정을 확인했으며, 이에 동의합니다.</span>
-            </label>
-          </div>
+          <div className="field" style={{ marginTop: '20px', display: 'flex', alignItems: 'center' }}>
+  <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <input 
+      type="checkbox" 
+      checked={agree} 
+      onChange={(e) => setAgree(e.target.checked)} 
+      style={{ width: '20px', height: '20px' }} // 크게 만들기
+    />
+    <span>[필수] 대여 규정을 확인했으며, 이에 동의합니다.</span>
+  </label>
+</div>
 
           <button className="btn-submit" onClick={handleSubmit}>신청서 제출</button>
         </div>
