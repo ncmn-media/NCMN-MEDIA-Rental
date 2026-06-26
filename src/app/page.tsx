@@ -8,17 +8,14 @@ import { collection, addDoc } from "firebase/firestore";
 
 const equipList = ["촬영용 카메라", "스틸(사진) 카메라", "카메라 삼각대", "촬영 무선 마이크", "저장장치 (SSD 외장하드)", "SD 메모리카드", "SDI 케이블", "HDMI 케이블", "Apple TV", "기타"];
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRk1aE5AAwUzsv01ZPxDqcz_kyQ0pXV8rUSGYi4NQ9hqoaId5aFy_a_La6AhU-tmcI_Q/exec";
+
 export default function RentalForm() {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [startDate, endDate] = dateRange;
-  
-  // 👉 [수정됨] formData에 location(장소)과 purpose(목적) 추가
-  const [formData, setFormData] = useState({
-    name: '', team: '', phone: '', location: '', purpose: ''
-  });
-  
+  const [formData, setFormData] = useState({ name: '', team: '', phone: '', location: '', purpose: '' });
   const [selEquip, setSelEquip] = useState<Set<string>>(new Set());
   const [agree, setAgree] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<'eq' | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,177 +28,108 @@ export default function RentalForm() {
   };
 
   const handleSubmit = async () => {
-    // 👉 [수정됨] 장소와 목적 필수 입력 검사 추가
-    if (!formData.name) return alert('이름을 입력해주세요.');
-    if (!formData.team) return alert('사역팀을 입력해주세요.');
-    if (!formData.phone) return alert('연락처를 입력해주세요.');
-    if (!startDate) return alert('대여 시작일을 선택해주세요.');
-    if (selEquip.size === 0) return alert('장비를 선택해주세요.');
-    if (!formData.location) return alert('사용 장소를 선택해주세요.');
-    if (!formData.purpose) return alert('사용 목적을 입력해주세요.');
-    if (!agree) return alert('규정 동의 체크박스를 눌러주세요.');
+    if (!formData.name || !formData.team || !formData.phone || !startDate || selEquip.size === 0 || !formData.location || !formData.purpose || !agree) {
+      return alert('모든 항목을 입력하고 규정에 동의해주세요.');
+    }
     
     setIsSubmitting(true);
+    const payload = { 
+      ...formData,
+      startDate: startDate?.toLocaleDateString(),
+      endDate: endDate?.toLocaleDateString() || startDate?.toLocaleDateString(),
+      equipment: Array.from(selEquip).join(', '),
+      submittedAt: new Date().toLocaleString()
+    };
 
     try {
-      const payload = { 
-        name: formData.name,
-        team: formData.team,
-        phone: formData.phone,
-        location: formData.location, // 저장할 때 추가
-        purpose: formData.purpose,   // 저장할 때 추가
-        startDate: startDate ? startDate.toLocaleDateString() : "",
-        endDate: endDate ? endDate.toLocaleDateString() : (startDate ? startDate.toLocaleDateString() : ""), 
-        equipment: Array.from(selEquip).join(', '), 
-        submittedAt: new Date().toLocaleString() 
-      };
-
       await fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-
       await addDoc(collection(db, "reservations"), payload);
-      await new Promise((resolve) => setTimeout(resolve, 500)); 
-      
       setIsSuccess(true);
-    } catch (e: any) {
-      console.error("❌ Firebase 저장 실패:", e); 
-      alert(`데이터베이스 연결에 실패했습니다. 에러 내용: ${e.message}`);
+    } catch (e) {
+      alert("전송 실패: 다시 시도해주세요.");
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="form-wrap" style={{ minHeight: '100vh', padding: '20px' }}>
+    <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px' }}>
       <style jsx global>{`
-        .react-datepicker-popper {
-          z-index: 9999 !important;
-        }
+        .react-datepicker-wrapper { width: 100%; }
+        .field-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
       `}</style>
 
       {!isSuccess ? (
-        <div id="form-body" style={{ maxWidth: '600px', margin: '0 auto', background: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <div className="form-title" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', textAlign: 'center' }}>NCMN 미디어 장비 대여 신청서</div>
+        <>
+          <h2 style={{ textAlign: 'center' }}>NCMN 미디어 장비 대여 신청서</h2>
 
-          {/* 신청자 정보 */}
           <div className="section" style={{ marginBottom: '20px' }}>
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>👤 신청자 정보</div>
-            <div className="field" style={{ marginBottom: '10px' }}><label style={{ display: 'block', marginBottom: '5px' }}>이름</label><input type="text" onChange={(e) => setFormData({...formData, name: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
-            <div className="field" style={{ marginBottom: '10px' }}><label style={{ display: 'block', marginBottom: '5px' }}>사역팀</label><input type="text" onChange={(e) => setFormData({...formData, team: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
-            <div className="field" style={{ marginBottom: '10px' }}><label style={{ display: 'block', marginBottom: '5px' }}>연락처</label><input type="tel" onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
+            <div className="field" style={{ marginBottom: '10px' }}><label>이름</label><input type="text" onChange={(e) => setFormData({...formData, name: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
+            <div className="field" style={{ marginBottom: '10px' }}><label>사역팀</label><input type="text" onChange={(e) => setFormData({...formData, team: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
+            <div className="field" style={{ marginBottom: '10px' }}><label>연락처</label><input type="tel" onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
           </div>
 
-          {/* 대여 기간 */}
           <div className="section" style={{ position: 'relative', marginBottom: '20px' }}>
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>📅 대여 기간 선택</div>
-            <DatePicker
-              selectsRange={true}
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(update) => setDateRange(update)}
-              locale={ko}
-              dateFormat="yyyy년 MM월 dd일"
-              placeholderText="날짜를 선택해주세요"
-              className="field-input"
-              customInput={<input style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} />}
-            />
+            <DatePicker selectsRange={true} startDate={startDate} endDate={endDate} onChange={(update) => setDateRange(update)} locale={ko} dateFormat="yyyy년 MM월 dd일" className="field-input" />
           </div>
 
-          {/* 장비 선택 */}
           <div className="section" style={{ position: 'relative', marginBottom: '20px' }}>
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>📷 대여 장비</div>
             <div className="field">
               <div onClick={() => setDropdownOpen(dropdownOpen === 'eq' ? null : 'eq')} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', cursor: 'pointer', background: '#f9f9f9' }}>
-                {selEquip.size > 0 ? Array.from(selEquip).join(', ') : "장비를 선택해주세요 (클릭)"}
+                {selEquip.size > 0 ? Array.from(selEquip).join(', ') : "장비 선택 (클릭)"}
               </div>
-              
               {dropdownOpen === 'eq' && (
-                <div style={{ border: '1px solid #ccc', padding: '10px', marginTop: '5px', borderRadius: '5px', backgroundColor: '#fff', position: 'absolute', width: '100%', zIndex: 999, boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                <div style={{ border: '1px solid #ccc', padding: '10px', marginTop: '5px', borderRadius: '5px', backgroundColor: '#fff', position: 'absolute', width: '100%', zIndex: 999 }}>
                   {equipList.map((item) => (
-                    <div key={item} onClick={() => toggleEquip(item)} style={{ padding: '8px', cursor: 'pointer', backgroundColor: selEquip.has(item) ? '#e6f7ff' : 'transparent', borderRadius: '4px', marginBottom: '2px' }}>
+                    <div key={item} onClick={() => toggleEquip(item)} style={{ padding: '5px', cursor: 'pointer', background: selEquip.has(item) ? '#e6f7ff' : 'transparent' }}>
                       {selEquip.has(item) ? '✅ ' : '⬜ '} {item}
                     </div>
                   ))}
-                  <button onClick={() => setDropdownOpen(null)} style={{ marginTop: '10px', width: '100%', padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>선택 완료</button>
+                  <button onClick={() => setDropdownOpen(null)} style={{ marginTop: '10px', width: '100%' }}>선택 완료</button>
                 </div>
               )}
             </div>
           </div>
 
-          {/* 👉 [추가됨] 사용 장소 및 목적 */}
-          <div className="section" style={{ position: 'relative', marginBottom: '20px' }}>
+          <div className="section" style={{ marginBottom: '20px' }}>
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>📍 사용 정보</div>
-            
-            {/* 사용 장소 (드롭다운) */}
-            <div className="field" style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '5px' }}>사용 장소</label>
-              <select 
-                value={formData.location}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', background: '#fff', fontSize: '15px' }}
-              >
-                <option value="">장소를 선택해주세요</option>
-                <option value="NCMN 센터 지하 2층">NCMN 센터 지하 2층</option>
-                <option value="NCMN 센터 2층">NCMN 센터 2층</option>
-                <option value="NCMN 센터 3층">NCMN 센터 3층</option>
-                <option value="NCMN 센터 5층">NCMN 센터 5층</option>
-              </select>
-            </div>
-
-            {/* 사용 목적 (텍스트 입력) */}
-            <div className="field" style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'block', marginBottom: '5px' }}>사용 목적</label>
-              <textarea 
-                placeholder="어떤 용도로 사용하시는지 상세히 적어주세요. (예: 주일 예배 촬영, 행사 스케치 등)"
-                value={formData.purpose}
-                onChange={(e) => setFormData({...formData, purpose: e.target.value})}
-                style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', minHeight: '80px', resize: 'vertical', fontSize: '15px' }}
-              />
-            </div>
+            <select onChange={(e) => setFormData({...formData, location: e.target.value})} style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+              <option value="">장소 선택</option>
+              {["지하 2층", "2층", "3층", "5층"].map(loc => <option key={loc} value={loc}>{loc}</option>)}
+            </select>
+            <textarea placeholder="사용 목적" onChange={(e) => setFormData({...formData, purpose: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} />
           </div>
 
-          {/* 하단 제출 섹션 */}
-          <div style={{ padding: '20px', borderTop: '1px solid #eee', marginTop: '30px' }}>
-            <div 
-              onClick={() => setAgree(!agree)}
-              style={{ 
-                display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '15px', 
-                backgroundColor: agree ? '#e6f7ff' : '#f8f9fa', borderRadius: '8px', 
-                border: agree ? '1px solid #007bff' : '1px solid #ddd', marginBottom: '20px'
-              }}
-            >
-              <div style={{ width: '24px', height: '24px', border: '2px solid #007bff', borderRadius: '4px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: agree ? '#007bff' : 'white' }}>
-                {agree && <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>✓</span>}
-              </div>
-              <span style={{ fontSize: '15px', userSelect: 'none', color: '#333' }}>[필수] 대여 규정을 확인했으며, 이에 동의합니다.</span>
-            </div>
-
-            <button 
-              onClick={handleSubmit} 
-              disabled={isSubmitting}
-              style={{ 
-                width: '100%', padding: '15px', backgroundColor: isSubmitting ? '#a0c4ff' : '#007bff', color: 'white', 
-                border: 'none', borderRadius: '8px', fontSize: '18px', cursor: isSubmitting ? 'wait' : 'pointer', fontWeight: 'bold'
-              }}
-            >
-              {isSubmitting ? '제출 중...' : '신청서 제출'}
-            </button>
+          <div style={{ margin: '20px 0' }}>
+            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ width: '20px', height: '20px', marginRight: '10px' }} />
+              [필수] 대여 규정에 동의합니다.
+            </label>
+            <button onClick={() => setShowModal(true)} style={{ background: 'none', border: 'none', color: '#007bff', textDecoration: 'underline', marginTop: '5px' }}>규정 상세 보기</button>
           </div>
-        </div> 
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh', textAlign: 'center' }}>
-          <div style={{ fontSize: '70px', marginBottom: '20px' }}>🎉</div>
-          <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#007bff', marginBottom: '15px' }}>신청이 완료되었습니다!</h2>
-          <p style={{ fontSize: '18px', color: '#555', marginBottom: '30px' }}>담당자가 확인 후 연락드리겠습니다.</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#f8f9fa', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', color: '#333' }}
-          >
-            새로운 신청서 작성하기
+
+          <button onClick={handleSubmit} disabled={isSubmitting} style={{ width: '100%', padding: '15px', background: '#007bff', color: 'white', border: 'none', borderRadius: '5px', fontSize: '18px' }}>
+            {isSubmitting ? '제출 중...' : '신청서 제출'}
           </button>
+        </>
+      ) : (
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>🎉 신청 완료!</div>
+      )}
+
+      {showModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ background: 'white', padding: '20px', borderRadius: '10px', width: '80%', maxWidth: '400px' }}>
+            <h3>대여 규정</h3>
+            <p>1. 장비 사용 후 반드시 반납해주세요.<br/>2. 파손 시 책임이 발생합니다.</p>
+            <button onClick={() => setShowModal(false)} style={{ width: '100%', padding: '10px', background: '#ccc' }}>닫기</button>
+          </div>
         </div>
       )}
     </div>
