@@ -18,6 +18,9 @@ export default function RentalForm() {
   const [agree, setAgree] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<'eq' | null>(null);
+  
+  // 👉 [추가됨] 로딩 상태를 관리하는 변수
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleEquip = (name: string) => {
     const newSet = new Set(selEquip);
@@ -34,14 +37,10 @@ export default function RentalForm() {
     if (selEquip.size === 0) return alert('장비를 선택해주세요.');
     if (!agree) return alert('규정 동의 체크박스를 눌러주세요.');
     
-    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-      alert("⚠️ Vercel 환경 변수가 비어있습니다! Vercel Settings > Environment Variables를 확인 후 다시 배포해주세요.");
-      console.error("환경변수 누락됨:", process.env);
-      return; // 환경변수가 없으면 무한 대기에 빠지기 전에 여기서 멈춥니다.
-    }
-    
+    // 👉 [추가됨] 버튼을 누르면 로딩 상태로 변경
+    setIsSubmitting(true);
+
     try {
-      // FIX 1: undefined가 들어가지 않도록 빈 문자열('')로 확실히 처리
       const payload = { 
         name: formData.name,
         team: formData.team,
@@ -52,22 +51,20 @@ export default function RentalForm() {
         submittedAt: new Date().toLocaleString() 
       };
 
-      console.log("👉 [1단계] Firebase로 전송을 시도합니다...", payload);
-      alert('신청서를 제출 중입니다. 잠시만 기다려주세요...');
-
       await addDoc(collection(db, "reservations"), payload);
       
-      console.log("🎉 [2단계] Firebase 저장 성공!");
+      // 저장이 완료되면 성공 화면으로 전환
       setIsSuccess(true);
     } catch (e: any) {
       console.error("❌ Firebase 저장 실패:", e); 
       alert(`데이터베이스 연결에 실패했습니다. 에러 내용: ${e.message}`);
+      // 에러가 나면 다시 버튼을 누를 수 있게 로딩 상태 해제
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="form-wrap">
-      {/* FIX 2: 달력 팝업을 무조건 맨 위로 강제로 끌어올리는 CSS */}
       <style jsx global>{`
         .react-datepicker-popper {
           z-index: 9999 !important;
@@ -156,21 +153,23 @@ export default function RentalForm() {
               </span>
             </div>
 
+            {/* 👉 [수정됨] 로딩 상태에 따라 버튼 디자인과 동작 변경 */}
             <button 
               onClick={handleSubmit} 
+              disabled={isSubmitting}
               style={{ 
                 width: '100%', 
                 padding: '15px', 
-                backgroundColor: '#007bff', 
+                backgroundColor: isSubmitting ? '#a0c4ff' : '#007bff', 
                 color: 'white', 
                 border: 'none', 
                 borderRadius: '8px', 
                 fontSize: '18px',
-                cursor: 'pointer',
+                cursor: isSubmitting ? 'wait' : 'pointer',
                 fontWeight: 'bold'
               }}
             >
-              신청서 제출
+              {isSubmitting ? '제출 중...' : '신청서 제출'}
             </button>
           </div>
 
