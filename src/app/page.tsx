@@ -107,37 +107,38 @@ export default function RentalForm() {
                 {selEquip.size > 0 ? `${selEquip.size}개 선택됨` : "장비를 선택해주세요"}
               </div>
               {dropdownOpen === 'eq' && (
-  <div className="ms-dd open">
-    {equipList.map(eq => (
-      <div key={eq} className={`ms-opt ${selEquip.has(eq) ? 'sel' : ''}`} onClick={() => toggleEquip(eq)}>
-        <span>{eq}</span>
-      </div>
-    ))}
-    {/* 닫기 버튼 추가 */}
-    <button 
-      className="btn-close-dropdown" 
-      onClick={() => setDropdownOpen(null)}
-      style={{ width: '100%', marginTop: '10px' }}
-    >
-      선택 완료
-    </button>
-  </div>
-)}
-            </div>
-          </div>
 
-          {/* 동의 체크박스 (추가 필요) */}
-<div className="field" style={{ marginTop: '20px' }}>
-  <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-    <input 
-      type="checkbox" 
-      checked={agree} 
-      onChange={(e) => setAgree(e.target.checked)} 
-      style={{ marginRight: '10px' }}
-    />
-    <span>[필수] 대여 규정을 확인했으며, 이에 동의합니다.</span>
-  </label>
-</div>
+          <div className="ms-dd open">
+              {equipList.map(eq => (
+                <div key={eq} className={`ms-opt ${selEquip.has(eq) ? 'sel' : ''}`} onClick={() => toggleEquip(eq)}>
+                  <span>{eq}</span>
+                </div>
+              ))}
+              {/* 닫기 버튼 추가 */}
+              <button 
+                className="btn-close-dropdown" 
+                onClick={() => setDropdownOpen(null)}
+                style={{ width: '100%', marginTop: '10px' }}
+              >
+                선택 완료
+              </button>
+            </div>
+          )}
+                      </div>
+                    </div>
+
+                    {/* 동의 체크박스 (추가 필요) */}
+          <div className="field" style={{ marginTop: '20px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+              <input 
+                type="checkbox" 
+                checked={agree} 
+                onChange={(e) => setAgree(e.target.checked)} 
+                style={{ marginRight: '10px' }}
+              />
+              <span>[필수] 대여 규정을 확인했으며, 이에 동의합니다.</span>
+            </label>
+          </div>
 
           <button className="btn-submit" onClick={handleSubmit}>신청서 제출</button>
         </div>
