@@ -15,10 +15,9 @@ export default function RentalForm() {
     name: '', team: '', phone: ''
   });
   const [selEquip, setSelEquip] = useState<Set<string>>(new Set());
-  const [selLoc, setSelLoc] = useState('');
   const [agree, setAgree] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState<'eq' | null>(null); // 장비 선택용
+  const [dropdownOpen, setDropdownOpen] = useState<'eq' | null>(null);
 
   const toggleEquip = (name: string) => {
     const newSet = new Set(selEquip);
@@ -28,10 +27,9 @@ export default function RentalForm() {
   };
 
   const handleSubmit = async () => {
-    console.log("버튼 클릭됨!"); // <-- 이 줄이 핵심!
-  console.log("현재 상태:", { name: formData.name, agree: agree, selEquipSize: selEquip.size });
+    console.log("버튼 클릭됨!"); 
+    console.log("현재 상태:", { name: formData.name, agree: agree, selEquipSize: selEquip.size });
 
-    // 하나씩 체크해서 어디가 문제인지 알림 띄우기
     if (!formData.name) return alert('이름을 입력해주세요.');
     if (!formData.team) return alert('사역팀을 입력해주세요.');
     if (!formData.phone) return alert('연락처를 입력해주세요.');
@@ -48,11 +46,18 @@ export default function RentalForm() {
         submittedAt: new Date().toLocaleString() 
       };
 
+      console.log("👉 [1단계] Firebase로 전송을 시도합니다...", payload);
+      
+      // 전송 시작 시 사용자에게 진행 중임을 알림
+      alert('신청서를 제출 중입니다. 잠시만 기다려주세요...');
+
       await addDoc(collection(db, "reservations"), payload);
+      
+      console.log("🎉 [2단계] Firebase 저장 성공!");
       setIsSuccess(true);
-    } catch (e) {
-      console.error(e); // 여기서 에러 확인 가능
-      alert('데이터베이스 연결에 실패했습니다. 환경 변수를 확인해주세요.');
+    } catch (e: any) {
+      console.error("❌ Firebase 저장 실패:", e); 
+      alert(`데이터베이스 연결에 실패했습니다. 에러 내용: ${e.message}`);
     }
   };
 
@@ -70,8 +75,8 @@ export default function RentalForm() {
             <div className="field"><label>연락처</label><input type="tel" onChange={(e) => setFormData({...formData, phone: e.target.value})} /></div>
           </div>
 
-          {/* 대여 기간 */}
-          <div className="section">
+          {/* 대여 기간 (z-index를 주어 하단 레이어 위로 배치) */}
+          <div className="section" style={{ position: 'relative', zIndex: 100 }}>
             <div className="section-title">📅 대여 기간 선택</div>
             <DatePicker
               selectsRange={true}
@@ -85,8 +90,8 @@ export default function RentalForm() {
             />
           </div>
 
-          {/* 장비 선택 (깔끔하게 수정) */}
-          <div className="section">
+          {/* 장비 선택 */}
+          <div className="section" style={{ position: 'relative', zIndex: 90 }}>
             <div className="section-title">📷 대여 장비</div>
             <div className="field">
               <div className="ms-trigger" onClick={() => setDropdownOpen(dropdownOpen === 'eq' ? null : 'eq')}>
@@ -94,7 +99,7 @@ export default function RentalForm() {
               </div>
               
               {dropdownOpen === 'eq' && (
-                <div className="dropdown-panel" style={{ border: '1px solid #ccc', padding: '10px', marginTop: '5px', borderRadius: '5px' }}>
+                <div className="dropdown-panel" style={{ border: '1px solid #ccc', padding: '10px', marginTop: '5px', borderRadius: '5px', backgroundColor: '#fff' }}>
                   {equipList.map((item) => (
                     <div key={item} onClick={() => toggleEquip(item)} style={{ padding: '5px', cursor: 'pointer', backgroundColor: selEquip.has(item) ? '#e6f7ff' : 'transparent' }}>
                       {selEquip.has(item) ? '✅ ' : '⬜ '} {item}
@@ -106,10 +111,10 @@ export default function RentalForm() {
             </div>
           </div>
 
-         {/* 레이아웃 방해를 원천 차단한 확실한 제출 섹션 */}
-          <div style={{ padding: '20px', borderTop: '1px solid #eee', marginTop: '30px', position: 'relative', zIndex: 9999 }}>
+          {/* 하단 제출 섹션 (우선순위를 낮춰서 캘린더가 덮을 수 있게 수정) */}
+          <div style={{ padding: '20px', borderTop: '1px solid #eee', marginTop: '30px', position: 'relative', zIndex: 1 }}>
             
-            {/* 박스 전체가 클릭되는 커스텀 동의 버튼 */}
+            {/* 커스텀 동의 버튼 */}
             <div 
               onClick={() => setAgree(!agree)}
               style={{ 
@@ -162,7 +167,9 @@ export default function RentalForm() {
 
         </div> 
       ) : (
-        <div className="success-screen">신청 완료!</div>
+        <div className="success-screen" style={{ padding: '40px', textAlign: 'center', fontSize: '24px', fontWeight: 'bold', color: '#007bff' }}>
+          🎉 신청 완료!
+        </div>
       )}
     </div>
   );
