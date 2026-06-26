@@ -34,6 +34,12 @@ export default function RentalForm() {
     if (selEquip.size === 0) return alert('장비를 선택해주세요.');
     if (!agree) return alert('규정 동의 체크박스를 눌러주세요.');
     
+    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+      alert("⚠️ Vercel 환경 변수가 비어있습니다! Vercel Settings > Environment Variables를 확인 후 다시 배포해주세요.");
+      console.error("환경변수 누락됨:", process.env);
+      return; // 환경변수가 없으면 무한 대기에 빠지기 전에 여기서 멈춥니다.
+    }
+    
     try {
       // FIX 1: undefined가 들어가지 않도록 빈 문자열('')로 확실히 처리
       const payload = { 
