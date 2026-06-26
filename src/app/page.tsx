@@ -56,6 +56,13 @@ export default function RentalForm() {
         submittedAt: new Date().toLocaleString() 
       };
 
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
       await addDoc(collection(db, "reservations"), payload);
       await new Promise((resolve) => setTimeout(resolve, 500)); 
       
