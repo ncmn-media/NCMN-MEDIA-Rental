@@ -7,7 +7,7 @@ import { db } from "../lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
 
 const equipList = ["촬영용 카메라", "스틸(사진) 카메라", "카메라 삼각대", "촬영 무선 마이크", "저장장치 (SSD 외장하드)", "SD 메모리카드", "SDI 케이블", "HDMI 케이블", "Apple TV", "기타"];
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRk1aE5AAwUzsv01ZPxDqcz_kyQ0pXV8rUSGYi4NQ9hqoaId5aFy_a_La6AhU-tmcI_Q/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyapQhIEv5Y3d6150sSEQEu3NdKd2KZ7iK7-a0HMSipQ19lxHtQ-h8syxK1f9ftFSNOfQ/exec";
 
 export default function RentalForm() {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
