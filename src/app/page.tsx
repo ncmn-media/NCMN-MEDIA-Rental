@@ -106,43 +106,62 @@ export default function RentalForm() {
             </div>
           </div>
 
-          {/* 레이아웃 방해 요소를 최소화한 제출 섹션 */}
-<div style={{ padding: '20px', borderTop: '1px solid #eee', marginTop: '30px' }}>
-  
-  {/* 체크박스 */}
-  <div style={{ marginBottom: '20px' }}>
-    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '16px' }}>
-      <input 
-        type="checkbox" 
-        checked={agree} 
-        onChange={(e) => setAgree(e.target.checked)} 
-        style={{ transform: 'scale(1.5)', cursor: 'pointer' }} // 클릭 잘 되게 크기 키움
-      />
-      <span>[필수] 대여 규정을 확인했으며, 이에 동의합니다.</span>
-    </label>
-  </div>
+         {/* 레이아웃 방해를 원천 차단한 확실한 제출 섹션 */}
+          <div style={{ padding: '20px', borderTop: '1px solid #eee', marginTop: '30px', position: 'relative', zIndex: 9999 }}>
+            
+            {/* 박스 전체가 클릭되는 커스텀 동의 버튼 */}
+            <div 
+              onClick={() => setAgree(!agree)}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '12px', 
+                cursor: 'pointer', 
+                padding: '15px', 
+                backgroundColor: agree ? '#e6f7ff' : '#f8f9fa', 
+                borderRadius: '8px', 
+                border: agree ? '1px solid #007bff' : '1px solid #ddd',
+                marginBottom: '20px'
+              }}
+            >
+              <div style={{ 
+                width: '24px', 
+                height: '24px', 
+                border: '2px solid #007bff', 
+                borderRadius: '4px', 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                backgroundColor: agree ? '#007bff' : 'white' 
+              }}>
+                {agree && <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>✓</span>}
+              </div>
+              <span style={{ fontSize: '16px', userSelect: 'none', color: '#333' }}>
+                [필수] 대여 규정을 확인했으며, 이에 동의합니다.
+              </span>
+            </div>
 
-  {/* 제출 버튼 (z-index를 줘서 가장 앞으로 튀어나오게 설정) */}
-  <button 
-    onClick={handleSubmit} 
-    style={{ 
-      width: '100%', 
-      padding: '15px', 
-      backgroundColor: '#007bff', 
-      color: 'white', 
-      border: 'none', 
-      borderRadius: '8px', 
-      fontSize: '18px',
-      cursor: 'pointer',
-      position: 'relative',
-      zIndex: 1000 // 다른 요소에 가려지지 않게 설정
-    }}
-  >
-    신청서 제출
-  </button>
-</div> 
+            {/* 제출 버튼 */}
+            <button 
+              onClick={handleSubmit} 
+              style={{ 
+                width: '100%', 
+                padding: '15px', 
+                backgroundColor: '#007bff', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '8px', 
+                fontSize: '18px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              신청서 제출
+            </button>
+          </div>
 
-</div>  ) : (
+        </div> 
+      ) : (
         <div className="success-screen">신청 완료!</div>
       )}
     </div>
