@@ -27,9 +27,6 @@ export default function RentalForm() {
   };
 
   const handleSubmit = async () => {
-    console.log("버튼 클릭됨!"); 
-    console.log("현재 상태:", { name: formData.name, agree: agree, selEquipSize: selEquip.size });
-
     if (!formData.name) return alert('이름을 입력해주세요.');
     if (!formData.team) return alert('사역팀을 입력해주세요.');
     if (!formData.phone) return alert('연락처를 입력해주세요.');
@@ -38,17 +35,18 @@ export default function RentalForm() {
     if (!agree) return alert('규정 동의 체크박스를 눌러주세요.');
     
     try {
+      // FIX 1: undefined가 들어가지 않도록 빈 문자열('')로 확실히 처리
       const payload = { 
-        ...formData, 
-        startDate: startDate?.toLocaleDateString(),
-        endDate: endDate?.toLocaleDateString(),
+        name: formData.name,
+        team: formData.team,
+        phone: formData.phone,
+        startDate: startDate ? startDate.toLocaleDateString() : "",
+        endDate: endDate ? endDate.toLocaleDateString() : (startDate ? startDate.toLocaleDateString() : ""), 
         equipment: Array.from(selEquip).join(', '), 
         submittedAt: new Date().toLocaleString() 
       };
 
       console.log("👉 [1단계] Firebase로 전송을 시도합니다...", payload);
-      
-      // 전송 시작 시 사용자에게 진행 중임을 알림
       alert('신청서를 제출 중입니다. 잠시만 기다려주세요...');
 
       await addDoc(collection(db, "reservations"), payload);
@@ -63,6 +61,13 @@ export default function RentalForm() {
 
   return (
     <div className="form-wrap">
+      {/* FIX 2: 달력 팝업을 무조건 맨 위로 강제로 끌어올리는 CSS */}
+      <style jsx global>{`
+        .react-datepicker-popper {
+          z-index: 9999 !important;
+        }
+      `}</style>
+
       {!isSuccess ? (
         <div id="form-body">
           <div className="form-title">NCMN 미디어 장비 대여 신청서</div>
@@ -75,8 +80,8 @@ export default function RentalForm() {
             <div className="field"><label>연락처</label><input type="tel" onChange={(e) => setFormData({...formData, phone: e.target.value})} /></div>
           </div>
 
-          {/* 대여 기간 (z-index를 주어 하단 레이어 위로 배치) */}
-          <div className="section" style={{ position: 'relative', zIndex: 100 }}>
+          {/* 대여 기간 */}
+          <div className="section" style={{ position: 'relative' }}>
             <div className="section-title">📅 대여 기간 선택</div>
             <DatePicker
               selectsRange={true}
@@ -91,7 +96,7 @@ export default function RentalForm() {
           </div>
 
           {/* 장비 선택 */}
-          <div className="section" style={{ position: 'relative', zIndex: 90 }}>
+          <div className="section" style={{ position: 'relative' }}>
             <div className="section-title">📷 대여 장비</div>
             <div className="field">
               <div className="ms-trigger" onClick={() => setDropdownOpen(dropdownOpen === 'eq' ? null : 'eq')}>
@@ -99,7 +104,7 @@ export default function RentalForm() {
               </div>
               
               {dropdownOpen === 'eq' && (
-                <div className="dropdown-panel" style={{ border: '1px solid #ccc', padding: '10px', marginTop: '5px', borderRadius: '5px', backgroundColor: '#fff' }}>
+                <div className="dropdown-panel" style={{ border: '1px solid #ccc', padding: '10px', marginTop: '5px', borderRadius: '5px', backgroundColor: '#fff', position: 'absolute', width: '100%', zIndex: 999 }}>
                   {equipList.map((item) => (
                     <div key={item} onClick={() => toggleEquip(item)} style={{ padding: '5px', cursor: 'pointer', backgroundColor: selEquip.has(item) ? '#e6f7ff' : 'transparent' }}>
                       {selEquip.has(item) ? '✅ ' : '⬜ '} {item}
@@ -111,10 +116,9 @@ export default function RentalForm() {
             </div>
           </div>
 
-          {/* 하단 제출 섹션 (우선순위를 낮춰서 캘린더가 덮을 수 있게 수정) */}
-          <div style={{ padding: '20px', borderTop: '1px solid #eee', marginTop: '30px', position: 'relative', zIndex: 1 }}>
+          {/* 하단 제출 섹션 */}
+          <div style={{ padding: '20px', borderTop: '1px solid #eee', marginTop: '30px', position: 'relative' }}>
             
-            {/* 커스텀 동의 버튼 */}
             <div 
               onClick={() => setAgree(!agree)}
               style={{ 
@@ -146,7 +150,6 @@ export default function RentalForm() {
               </span>
             </div>
 
-            {/* 제출 버튼 */}
             <button 
               onClick={handleSubmit} 
               style={{ 
