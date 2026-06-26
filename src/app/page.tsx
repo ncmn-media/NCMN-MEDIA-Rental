@@ -28,6 +28,9 @@ export default function RentalForm() {
   };
 
   const handleSubmit = async () => {
+    console.log("버튼 클릭됨!"); // <-- 이 줄이 핵심!
+  console.log("현재 상태:", { name: formData.name, agree: agree, selEquipSize: selEquip.size });
+
     // 하나씩 체크해서 어디가 문제인지 알림 띄우기
     if (!formData.name) return alert('이름을 입력해주세요.');
     if (!formData.team) return alert('사역팀을 입력해주세요.');
@@ -103,22 +106,43 @@ export default function RentalForm() {
             </div>
           </div>
 
-          {/* 동의 체크박스 (하나로 정리) */}
-          <div className="field" style={{ marginTop: '20px', display: 'flex', alignItems: 'center' }}>
-  <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-    <input 
-      type="checkbox" 
-      checked={agree} 
-      onChange={(e) => setAgree(e.target.checked)} 
-      style={{ width: '20px', height: '20px' }} // 크게 만들기
-    />
-    <span>[필수] 대여 규정을 확인했으며, 이에 동의합니다.</span>
-  </label>
-</div>
+          {/* 레이아웃 방해 요소를 최소화한 제출 섹션 */}
+<div style={{ padding: '20px', borderTop: '1px solid #eee', marginTop: '30px' }}>
+  
+  {/* 체크박스 */}
+  <div style={{ marginBottom: '20px' }}>
+    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '16px' }}>
+      <input 
+        type="checkbox" 
+        checked={agree} 
+        onChange={(e) => setAgree(e.target.checked)} 
+        style={{ transform: 'scale(1.5)', cursor: 'pointer' }} // 클릭 잘 되게 크기 키움
+      />
+      <span>[필수] 대여 규정을 확인했으며, 이에 동의합니다.</span>
+    </label>
+  </div>
 
-          <button className="btn-submit" onClick={handleSubmit}>신청서 제출</button>
-        </div>
-      ) : (
+  {/* 제출 버튼 (z-index를 줘서 가장 앞으로 튀어나오게 설정) */}
+  <button 
+    onClick={handleSubmit} 
+    style={{ 
+      width: '100%', 
+      padding: '15px', 
+      backgroundColor: '#007bff', 
+      color: 'white', 
+      border: 'none', 
+      borderRadius: '8px', 
+      fontSize: '18px',
+      cursor: 'pointer',
+      position: 'relative',
+      zIndex: 1000 // 다른 요소에 가려지지 않게 설정
+    }}
+  >
+    신청서 제출
+  </button>
+</div> 
+
+</div>  ) : (
         <div className="success-screen">신청 완료!</div>
       )}
     </div>
