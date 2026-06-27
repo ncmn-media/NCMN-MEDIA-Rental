@@ -35,8 +35,8 @@ export default function RentalForm() {
     setIsSubmitting(true);
     const payload = { 
       ...formData,
-      startDate: startDate?.toLocaleDateString(),
-      endDate: endDate?.toLocaleDateString() || startDate?.toLocaleDateString(),
+      startDate: startDate?.toLocaleString(),
+      endDate: endDate?.toLocaleString() || startDate?.toLocaleString(),
       equipment: Array.from(selEquip).join(', '),
       submittedAt: new Date().toLocaleString()
     };
@@ -76,7 +76,19 @@ export default function RentalForm() {
 
           <div className="section" style={{ position: 'relative', marginBottom: '20px' }}>
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>📅 대여 기간 선택</div>
-            <DatePicker selectsRange={true} startDate={startDate} endDate={endDate} onChange={(update) => setDateRange(update)} locale={ko} dateFormat="yyyy년 MM월 dd일" className="field-input" />
+            <DatePicker 
+                selectsRange={true} 
+                startDate={startDate} 
+                endDate={endDate} 
+                onChange={(update) => setDateRange(update)} 
+                locale={ko} 
+                showTimeSelect // 시간 선택 활성화
+                timeIntervals={30} // 30분 단위 선택
+                timeFormat="HH:mm" // 시간 형식
+                dateFormat="yyyy년 MM월 dd일 HH:mm" // 표시 형식
+                className="field-input" 
+                placeholderText="날짜 및 시간 선택"
+              />
           </div>
 
           <div className="section" style={{ position: 'relative', marginBottom: '20px' }}>
@@ -102,7 +114,7 @@ export default function RentalForm() {
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>📍 사용 정보</div>
             <select onChange={(e) => setFormData({...formData, location: e.target.value})} style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
               <option value="">장소 선택</option>
-              {["지하 2층", "2층", "3층", "5층"].map(loc => <option key={loc} value={loc}>{loc}</option>)}
+              {["서울 비전센터 B2층", "서울 비전센터 2층", "서울 비전센터 3층", "서울 비전센터 5층 회의실", "고성 비전센터", "영등포 2층", "외부"].map(loc => <option key={loc} value={loc}>{loc}</option>)}
             </select>
             <textarea placeholder="사용 목적" onChange={(e) => setFormData({...formData, purpose: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} />
           </div>
@@ -132,7 +144,9 @@ export default function RentalForm() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ background: 'white', padding: '20px', borderRadius: '10px', width: '80%', maxWidth: '400px' }}>
             <h3>대여 규정</h3>
-            <p>1. 장비 사용 후 반드시 반납해주세요.<br/>2. 파손 시 책임이 발생합니다.</p>
+            <p>1. 장비대여 반납일을 지켜주세요.<br/>2. 장비 훼손 되지 않게 조심히 다뤄주세요.<br/> *안전사고 및 기기고장, 분실, 파손 등 사용상의 부주의나 과실로 인한 사고에 대해서는 해당 사역팀에 장비 수리비 비용부담과 책임을 지게 됩니다.*
+            <br/> 3. 장비대여는 일정한 기간 동안만 가능합니다.<br/> *사역이 끝나면 반납일에 맞게 바로 반납해주세요*<br/> * 외부 대여 관련 안내 드립니다*<br/>
+            외부 대여는 액팅리더와 소통이 필요합니다.</p>
             <button onClick={() => setShowModal(false)} style={{ width: '100%', padding: '10px', background: '#ccc' }}>닫기</button>
           </div>
         </div>
