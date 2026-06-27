@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from 'date-fns/locale';
@@ -8,6 +8,27 @@ import { collection, addDoc } from "firebase/firestore";
 
 const equipList = ["촬영용 카메라", "스틸(사진) 카메라", "카메라 삼각대", "촬영 무선 마이크", "저장장치 (SSD 외장하드)", "SD 메모리카드", "SDI 케이블", "HDMI 케이블", "Apple TV", "기타"];
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyapQhIEv5Y3d6150sSEQEu3NdKd2KZ7iK7-a0HMSipQ19lxHtQ-h8syxK1f9ftFSNOfQ/exec";
+
+// 날짜 선택 시 줄바꿈을 지원하기 위한 커스텀 인풋 컴포넌트
+const CustomDateInput = forwardRef<HTMLButtonElement, any>(({ value, onClick }, ref) => (
+  <button 
+    type="button" 
+    className="field-input" 
+    onClick={onClick} 
+    ref={ref} 
+    style={{ 
+      textAlign: 'left', 
+      whiteSpace: 'pre-wrap', // 줄바꿈 허용
+      minHeight: '46px',
+      background: '#fff',
+      cursor: 'pointer',
+      lineHeight: '1.5'
+    }}
+  >
+    {value ? value.replace(" - ", " ~\n") : "날짜 및 시간 선택 (클릭)"}
+  </button>
+));
+CustomDateInput.displayName = 'CustomDateInput';
 
 export default function RentalForm() {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
@@ -28,8 +49,8 @@ export default function RentalForm() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.team || !formData.phone || !startDate || selEquip.size === 0 || !formData.location || !formData.purpose || !agree) {
-      return alert('모든 항목을 입력하고 규정에 동의해주세요.');
+    if (!formData.name || !formData.team || !formData.phone || !startDate || selEquip.size === 0 || !formData.location || !formData.purpose) {
+      return alert('모든 항목을 입력해주세요.');
     }
     
     setIsSubmitting(true);
@@ -82,12 +103,11 @@ export default function RentalForm() {
                 endDate={endDate} 
                 onChange={(update) => setDateRange(update)} 
                 locale={ko} 
-                showTimeSelect // 시간 선택 활성화
-                timeIntervals={30} // 30분 단위 선택
-                timeFormat="HH:mm" // 시간 형식
-                dateFormat="yyyy년 MM월 dd일 HH:mm" // 표시 형식
-                className="field-input" 
-                placeholderText="날짜 및 시간 선택"
+                showTimeSelect 
+                timeIntervals={30} 
+                timeFormat="HH:mm" 
+                dateFormat="yyyy.MM.dd HH:mm" // 너무 길어지지 않게 포맷 축소
+                customInput={<CustomDateInput />} // 커스텀 인풋 적용 (줄바꿈 용도)
               />
           </div>
 
@@ -104,7 +124,7 @@ export default function RentalForm() {
                       {selEquip.has(item) ? '✅ ' : '⬜ '} {item}
                     </div>
                   ))}
-                  <button onClick={() => setDropdownOpen(null)} style={{ marginTop: '10px', width: '100%' }}>선택 완료</button>
+                  <button onClick={() => setDropdownOpen(null)} style={{ marginTop: '10px', width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc', cursor: 'pointer' }}>선택 완료</button>
                 </div>
               )}
             </div>
@@ -116,19 +136,35 @@ export default function RentalForm() {
               <option value="">장소 선택</option>
               {["서울 비전센터 B2층", "서울 비전센터 2층", "서울 비전센터 3층", "서울 비전센터 5층 회의실", "고성 비전센터", "영등포 2층", "외부"].map(loc => <option key={loc} value={loc}>{loc}</option>)}
             </select>
-            <textarea placeholder="사용 목적" onChange={(e) => setFormData({...formData, purpose: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} />
+            <textarea placeholder="사용 목적" onChange={(e) => setFormData({...formData, purpose: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', minHeight: '80px' }} />
           </div>
 
-          <div style={{ margin: '20px 0' }}>
-            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ width: '20px', height: '20px', marginRight: '10px' }} />
-              [필수] 대여 규정에 동의합니다.
-            </label>
-            <button onClick={() => setShowModal(true)} style={{ background: 'none', border: 'none', color: '#007bff', textDecoration: 'underline', marginTop: '5px' }}>규정 상세 보기</button>
+          <div style={{ margin: '20px 0', background: '#f8f9fa', padding: '15px', borderRadius: '5px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontWeight: 'bold' }}>
+                <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ width: '20px', height: '20px', marginRight: '10px' }} />
+                [필수] 대여 규정에 동의합니다.
+              </label>
+              <button onClick={() => setShowModal(true)} style={{ background: '#333', border: 'none', color: 'white', padding: '6px 12px', borderRadius: '5px', cursor: 'pointer', fontSize: '13px' }}>규정 보기</button>
+            </div>
           </div>
 
-          <button onClick={handleSubmit} disabled={isSubmitting} style={{ width: '100%', padding: '15px', background: '#007bff', color: 'white', border: 'none', borderRadius: '5px', fontSize: '18px' }}>
-            {isSubmitting ? '제출 중...' : '신청서 제출'}
+          <button 
+            onClick={handleSubmit} 
+            disabled={!agree || isSubmitting} // 동의하지 않았거나 제출 중이면 버튼 비활성화
+            style={{ 
+              width: '100%', 
+              padding: '15px', 
+              background: agree ? '#007bff' : '#cccccc', // 비활성화 시 회색 처리
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '5px', 
+              fontSize: '18px',
+              cursor: agree ? 'pointer' : 'not-allowed',
+              transition: 'background 0.3s'
+            }}
+          >
+            {isSubmitting ? '제출 중...' : (agree ? '신청서 제출' : '규정 동의 후 제출 가능')}
           </button>
         </>
       ) : (
@@ -141,13 +177,39 @@ export default function RentalForm() {
       )}
 
       {showModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '10px', width: '80%', maxWidth: '400px' }}>
-            <h3>대여 규정</h3>
-            <p>1. 장비대여 반납일을 지켜주세요.<br/>2. 장비 훼손 되지 않게 조심히 다뤄주세요.<br/> *안전사고 및 기기고장, 분실, 파손 등 사용상의 부주의나 과실로 인한 사고에 대해서는 해당 사역팀에 장비 수리비 비용부담과 책임을 지게 됩니다.*
-            <br/> 3. 장비대여는 일정한 기간 동안만 가능합니다.<br/> *사역이 끝나면 반납일에 맞게 바로 반납해주세요*<br/> * 외부 대여 관련 안내 드립니다*<br/>
-            외부 대여는 액팅리더와 소통이 필요합니다.</p>
-            <button onClick={() => setShowModal(false)} style={{ width: '100%', padding: '10px', background: '#ccc' }}>닫기</button>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', padding: '25px', borderRadius: '10px', width: '85%', maxWidth: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3 style={{ marginTop: 0, borderBottom: '2px solid #333', paddingBottom: '10px' }}>대여 규정</h3>
+            <div style={{ lineHeight: '1.7', fontSize: '15px', color: '#333', marginTop: '15px' }}>
+              <p style={{ margin: '0 0 15px 0' }}>
+                <strong>1. 반납일 준수</strong><br/>
+                장비대여 반납일을 반드시 지켜주세요.
+              </p>
+              <p style={{ margin: '0 0 15px 0' }}>
+                <strong>2. 장비 훼손 주의</strong><br/>
+                장비가 훼손되지 않게 조심히 다뤄주세요.<br/>
+                <span style={{ color: '#d9534f', fontSize: '13.5px' }}>* 안전사고 및 기기고장, 분실, 파손 등 사용상의 부주의나 과실로 인한 사고에 대해서는 해당 사역팀에 장비 수리비 비용 부담과 책임이 발생합니다.</span>
+              </p>
+              <p style={{ margin: '0 0 15px 0' }}>
+                <strong>3. 대여 기간 제한</strong><br/>
+                장비대여는 일정한 기간 동안만 가능합니다.<br/>
+                <span style={{ color: '#555', fontSize: '13.5px' }}>* 사역이 끝나면 반납일에 맞게 바로 반납해주세요.</span>
+              </p>
+              <p style={{ margin: '0 0 15px 0' }}>
+                <strong>4. 외부 대여 관련</strong><br/>
+                <span style={{ color: '#555', fontSize: '13.5px' }}>* 외부 대여는 사전에 액팅리더와의 소통이 반드시 필요합니다.</span>
+              </p>
+            </div>
+            
+            <button 
+              onClick={() => {
+                setAgree(true); // 규정을 닫을 때 자동으로 동의되게 하려면 이 줄을 유지하고, 직접 체크하게 하려면 삭제하세요.
+                setShowModal(false);
+              }} 
+              style={{ width: '100%', padding: '12px', background: '#007bff', color: 'white', border: 'none', borderRadius: '5px', fontSize: '16px', marginTop: '10px', cursor: 'pointer' }}
+            >
+              확인 및 동의하기
+            </button>
           </div>
         </div>
       )}
