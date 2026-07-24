@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   
   // 카카오톡 등 메신저 공유 시 보여지는 오픈그래프(OG) 설정
   openGraph: {
-    title: "NCMN 미디어 장비 대여 신청",
-    description: "원하시는 장비와 날짜를 선택하여 대여를 신청하세요.",
+    title: "NCMN MEDIA 통합페이지",
+    description: "NCMN MEDIA 통합관리페이지입니다.",
     url: "https://ncmn-media-rental.vercel.app", // 이전에 캡처에서 보여주신 실제 도메인
     siteName: "NCMN 미디어 장비 대여",
     images: [
