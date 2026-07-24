@@ -145,8 +145,6 @@ export default function RentalForm() {
              <div style={{ textAlign: 'center', marginTop: '-45px', marginBottom: '10px' }}></div>
           </div>
 
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>NCMN 미디어 장비 대여 신청서</h2>
-
           {/* 신청자 정보 */}
           <div className="section" style={{ marginBottom: '20px' }}>
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>👤 신청자 정보 (필수)</div>
