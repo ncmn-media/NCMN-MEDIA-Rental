@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, forwardRef, useRef, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
 import { ko } from 'date-fns/locale';
 import { db } from "../lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
@@ -54,7 +53,7 @@ export default function RentalForm() {
     requestNotes: '' 
   });
   
-  // 장비별 수량을 저장하는 맵 (예: { "촬영용 카메라": 1, "HDMI 케이블": 3 })
+  // 장비별 수량을 저장하는 맵
   const [selEquip, setSelEquip] = useState<{ [key: string]: number }>({});
   
   const [agree, setAgree] = useState(false);
@@ -82,9 +81,9 @@ export default function RentalForm() {
 
     const updated = { ...selEquip };
     if (newQty <= 0) {
-      delete updated[name]; // 수량이 0이 되면 목록에서 제거
+      delete updated[name];
     } else if (newQty <= max) {
-      updated[name] = newQty; // 최대 수량 이하일 때만 반영
+      updated[name] = newQty;
     }
     setSelEquip(updated);
   };
@@ -96,7 +95,6 @@ export default function RentalForm() {
     
     setIsSubmitting(true);
 
-    // 선택된 장비와 수량을 텍스트로 변환 (예: 촬영용 카메라(1개), HDMI 케이블(3개))
     const equipmentString = Object.entries(selEquip)
       .map(([name, qty]) => `${name} (${qty}개)`)
       .join(', ');
@@ -124,26 +122,25 @@ export default function RentalForm() {
     }
   };
 
-  // 요약 텍스트 생성
   const summaryText = Object.keys(selEquip).length > 0 
     ? Object.entries(selEquip).map(([name, qty]) => `${name} ${qty}개`).join(', ')
     : "장비 선택 (클릭)";
 
   return (
    <div style={{ maxWidth: '600px', margin: '10px auto 40px auto', padding: '20px' }}>
-      <style jsx global>{`
+      {/* CSS 전역 스타일 오류 해결을 위해 표준 style 태그로 변경 */}
+      <style>{`
         .react-datepicker-wrapper { width: 100%; }
         .field-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
       `}</style>
 
       {!isSuccess ? (
         <>
-          {/* 로고 위쪽 공간을 음수(-) 마진으로 바짝 끌어올림 */}
           <div style={{ textAlign: 'center', marginTop: '-25px', marginBottom: '2px' }}>
             <img 
               src="/ncmnlogo.png" 
               alt="NCMN 로고" 
-              style={{ width: '200px', height: 'auto', display: 'inline-block', objectFit: 'contain', marginLeft: '-12px' }} 
+              style={{ width: '200px', height: 'auto', display: 'inline-block', objectFit: 'contain', marginLeft: '-4px' }} 
             />
              <div style={{ textAlign: 'center', marginTop: '-45px', marginBottom: '10px' }}></div>
           </div>
@@ -152,13 +149,13 @@ export default function RentalForm() {
 
           {/* 신청자 정보 */}
           <div className="section" style={{ marginBottom: '20px' }}>
-            <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>👤 신청자 정보</div>
+            <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>👤 신청자 정보 (필수)</div>
             <div className="field" style={{ marginBottom: '10px' }}><label>이름</label><input type="text" onChange={(e) => setFormData({...formData, name: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
             <div className="field" style={{ marginBottom: '10px' }}><label>사역팀</label><input type="text" onChange={(e) => setFormData({...formData, team: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
             <div className="field" style={{ marginBottom: '10px' }}><label>연락처</label><input type="tel" onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
           </div>
 
-          {/* 대여일시 / 반납일시 분리 */}
+          {/* 대여일시 / 반납일시 분리 (date 타입 지정으로 암시적 any 에러 해결) */}
           <div className="section" style={{ marginBottom: '20px' }}>
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>📅 대여 일정 선택</div>
             
@@ -166,7 +163,7 @@ export default function RentalForm() {
               <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px', color: '#555' }}>대여 시작 일시</label>
               <DatePicker 
                 selected={startDate} 
-                onChange={(date) => setStartDate(date)} 
+                onChange={(date: Date | null) => setStartDate(date)} 
                 locale={ko} 
                 showTimeSelect 
                 timeIntervals={30} 
@@ -181,7 +178,7 @@ export default function RentalForm() {
               <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px', color: '#555' }}>반납 완료 일시</label>
               <DatePicker 
                 selected={endDate} 
-                onChange={(date) => setEndDate(date)} 
+                onChange={(date: Date | null) => setEndDate(date)} 
                 locale={ko} 
                 showTimeSelect 
                 timeIntervals={30} 
@@ -194,7 +191,7 @@ export default function RentalForm() {
             </div>
           </div>
 
-          {/* 대여 장비 (수량 선택 기능 포함) */}
+          {/* 대여 장비 */}
           <div className="section" style={{ position: 'relative', marginBottom: '20px' }}>
             <div className="section-title" style={{ fontWeight: 'bold', marginBottom: '10px' }}>📷 대여 장비</div>
             <div className="field">
@@ -286,6 +283,7 @@ export default function RentalForm() {
           >
             {isSubmitting ? '제출 중...' : (agree ? '신청서 제출' : '규정 동의 후 제출 가능')}
           </button>
+
           {/* 하단 안내 문구 추가 */}
           <div style={{ marginTop: '25px', padding: '15px', background: '#f1f3f5', borderRadius: '5px', fontSize: '13px', color: '#555', lineHeight: '1.5', textAlign: 'center' }}>
             본 서비스는 NCMN 내부 사역팀의 장비 대여 관리를 위한 서비스입니다.<br/>
