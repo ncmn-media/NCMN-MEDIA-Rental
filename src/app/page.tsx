@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, forwardRef, useRef, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
+// @ts-ignore
+import "react-datepicker/dist/react-datepicker.css";
 import { ko } from 'date-fns/locale';
 import { db } from "../lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
@@ -136,14 +138,7 @@ export default function RentalForm() {
 
       {!isSuccess ? (
         <>
-          <div style={{ textAlign: 'center', marginTop: '-25px', marginBottom: '2px' }}>
-            <img 
-              src="/ncmnlogo.png" 
-              alt="NCMN 로고" 
-              style={{ width: '120px', height: 'auto', display: 'inline-block', objectFit: 'contain', marginLeft: '-4px' }} 
-            />
-             <div style={{ textAlign: 'center', marginTop: '-25px', marginBottom: '10px' }}></div>
-          </div>
+          <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>NCMN 미디어 장비 대여 신청서</h2>
 
           {/* 신청자 정보 */}
           <div className="section" style={{ marginBottom: '20px' }}>
