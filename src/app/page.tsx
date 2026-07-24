@@ -140,7 +140,7 @@ export default function RentalForm() {
             <img 
               src="/ncmnlogo.png" 
               alt="NCMN 로고" 
-              style={{ width: '200px', height: 'auto', display: 'inline-block', objectFit: 'contain', marginLeft: '-4px' }} 
+              style={{ width: '120px', height: 'auto', display: 'inline-block', objectFit: 'contain', marginLeft: '-4px' }} 
             />
              <div style={{ textAlign: 'center', marginTop: '-45px', marginBottom: '10px' }}></div>
           </div>
@@ -153,7 +153,7 @@ export default function RentalForm() {
             <div className="field" style={{ marginBottom: '10px' }}><label>이름</label><input type="text" onChange={(e) => setFormData({...formData, name: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
             <div className="field" style={{ marginBottom: '10px' }}><label>사역팀</label><input type="text" onChange={(e) => setFormData({...formData, team: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
             <div className="field" style={{ marginBottom: '10px' }}><label>연락처</label><input type="tel" onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /></div>
-          </div>
+          </div> 
 
           {/* 대여일시 / 반납일시 분리 (date 타입 지정으로 암시적 any 에러 해결) */}
           <div className="section" style={{ marginBottom: '20px' }}>
