@@ -142,7 +142,7 @@ export default function RentalForm() {
               alt="NCMN 로고" 
               style={{ width: '120px', height: 'auto', display: 'inline-block', objectFit: 'contain', marginLeft: '-4px' }} 
             />
-             <div style={{ textAlign: 'center', marginTop: '-45px', marginBottom: '10px' }}></div>
+             <div style={{ textAlign: 'center', marginTop: '-25px', marginBottom: '10px' }}></div>
           </div>
 
           {/* 신청자 정보 */}
