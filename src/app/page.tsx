@@ -17,6 +17,8 @@ const equipList = [
   { name: "SDI 케이블", max: 5 },
   { name: "HDMI 케이블", max: 5 },
   { name: "Apple TV", max: 2 },
+  { name: "빔프로젝터", max:2 },
+  { name: "조립식 스크린(100,120,150)", max: 2},
 ];
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyapQhIEv5Y3d6150sSEQEu3NdKd2KZ7iK7-a0HMSipQ19lxHtQ-h8syxK1f9ftFSNOfQ/exec";
