@@ -1,0 +1,92 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import {
+  browserLocalPersistence,
+  setPersistence,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { auth } from "../../../lib/firebase";
+
+export default function AdminLoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const router = useRouter();
+
+  async function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+
+    try {
+      await setPersistence(auth, browserLocalPersistence);
+      await signInWithEmailAndPassword(auth, email, password);
+      router.replace("/admin");
+    } catch (err) {
+      console.error("관리자 로그인 실패:", err);
+      setError("로그인에 실패했습니다. 계정과 비밀번호를 확인해주세요.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <main className="page-shell">
+      <header className="page-top">
+        <Link className="brand" href="/">
+          NCMN <span>MEDIA</span>
+        </Link>
+        <Link className="back-link" href="/">
+          ← 홈으로
+        </Link>
+      </header>
+
+      <section className="page-intro">
+        <p className="eyebrow">ADMIN ACCESS</p>
+        <h1>관리자 로그인</h1>
+        <p>등록된 Firebase 인증 계정으로 로그인해주세요.</p>
+      </section>
+
+      <form className="surface lookup-form" onSubmit={submit}>
+        <label>
+          이메일
+          <input
+            type="email"
+            required
+            autoComplete="username"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="관리자 이메일"
+          />
+        </label>
+
+        <label>
+          비밀번호
+          <input
+            type="password"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="비밀번호"
+          />
+        </label>
+
+        <button className="primary-button" disabled={busy}>
+          {busy ? "로그인 중…" : "로그인"}
+        </button>
+
+        {error && <p className="error-text">{error}</p>}
+
+        <p className="form-note">
+          Firebase Authentication에 등록된 계정이어도 서버의 관리자 UID
+          목록에 포함되어야 전체 예약을 조회할 수 있습니다.
+        </p>
+      </form>
+    </main>
+  );
+}
