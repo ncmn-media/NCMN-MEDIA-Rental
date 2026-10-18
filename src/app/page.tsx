@@ -73,10 +73,13 @@ export default function HomePage() {
             src="/ncmnlogo.png"
             alt="NCMN MEDIA 로고"
             style={{
+              display: "block",
               width: "120px",
               height: "120px",
               objectFit: "contain",
-              display: "block",
+              transform: "none",
+              rotate: "none",
+              skew: "none",
             }}
           />
         </div>
