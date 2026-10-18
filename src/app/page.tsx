@@ -61,9 +61,7 @@ export default function HomePage() {
 
 
         <div className="hero-stamp">
-          SERVE
-          <br />
-          TOGETHER
+          url: "/ncmnlogo.png",
         </div>
       </section>
 
