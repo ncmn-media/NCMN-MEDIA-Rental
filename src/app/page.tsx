@@ -73,7 +73,6 @@ export default function HomePage() {
             <p className="eyebrow">QUICK MENU</p>
             <h2>무엇을 도와드릴까요?</h2>
           </div>
-          <span className="muted">미디어팀 내부 포털</span>
         </div>
 
         <div className="portal-grid">
