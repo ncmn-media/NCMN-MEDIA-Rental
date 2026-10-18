@@ -59,9 +59,16 @@ export default function HomePage() {
           장비 대여 신청하기 <span>→</span>
         </Link>
 
-
         <div className="hero-stamp">
-          url: "/ncmnlogo.png",
+          <img
+            src="/ncmnlogo.png"
+            alt="NCMN MEDIA 로고"
+            style={{
+              width: "120px",
+              height: "120px",
+              objectFit: "contain",
+            }}
+          />
         </div>
       </section>
 
