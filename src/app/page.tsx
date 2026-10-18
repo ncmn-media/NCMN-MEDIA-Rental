@@ -59,30 +59,26 @@ export default function HomePage() {
           장비 대여 신청하기 <span>→</span>
         </Link>
 
-        <div
-          className="hero-stamp"
-          style={{
-            border: "none",
-            outline: "none",
-            boxShadow: "none",
-            background: "transparent",
-            borderRadius: 0,
-          }}
-        >
+
+        <div className="hero-stamp">
           <img
             src="/ncmnlogo.png"
             alt="NCMN MEDIA 로고"
+            width={120}
+            height={120}
             style={{
               display: "block",
               width: "120px",
               height: "120px",
               objectFit: "contain",
               transform: "none",
-              rotate: "none",
-              skew: "none",
+              rotate: "0deg",
+              scale: "1",
+              filter: "none",
             }}
           />
         </div>
+
       </section>
 
       <section className="portal-section">
