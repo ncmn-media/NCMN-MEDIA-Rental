@@ -1,3 +1,16 @@
+"use client";
 import Link from "next/link";
-const notionUrl = "https://stealth-pickle-02c.notion.site/3a61e26251bd8060a041f9cf79044853?v=3a61e26251bd8061a280000cdad99397&pvs=143";
-export default function NoticesPage(){return <main className="page-shell"><header className="page-top"><Link className="brand" href="/">NCMN <span>MEDIA</span></Link><Link className="back-link" href="/">← 홈으로</Link></header><section className="page-intro"><p className="eyebrow">NOTICES</p><h1>공지사항</h1><p>미디어팀의 공지와 운영 안내를 확인해주세요.</p></section><article className="surface link-feature"><span className="feature-icon">✳</span><div><p className="eyebrow">NOTION</p><h2>미디어팀 공지 및 안내</h2><p>최신 공지 내용은 연결된 노션 페이지에서 확인할 수 있어요.</p><a className="text-link" href={notionUrl} target="_blank" rel="noreferrer">노션 공지 열기 ↗</a></div></article><p className="form-note standalone-note">노션 페이지의 공개·공유 권한에 따라 로그인이 필요할 수 있습니다.</p></main>}
+import { useEffect, useState } from "react";
+type Notice = { id: string; title: string; content?: string; createdAtIso?: string };
+export default function NoticesPage() {
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [busy, setBusy] = useState(true);
+  const [error, setError] = useState("");
+  useEffect(() => { fetch("/api/notices", { cache: "no-store" }).then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.error); setNotices(d.notices || []); }).catch(e => setError(e instanceof Error ? e.message : "공지사항을 불러오지 못했습니다.")).finally(() => setBusy(false)); }, []);
+  return <main className="page-shell">
+    <header className="page-top"><Link className="brand" href="/">NCMN <span>MEDIA</span></Link><Link className="back-link" href="/">← 홈으로</Link></header>
+    <section className="page-intro"><p className="eyebrow">NOTICES</p><h1>공지사항</h1><p>미디어팀의 공지와 운영 안내를 확인해주세요.</p></section>
+    {busy ? <div className="surface content-empty">공지사항을 불러오는 중입니다…</div> : error ? <div className="surface content-empty error-text">{error}</div> : notices.length === 0 ? <div className="surface content-empty">등록된 공지사항이 없습니다.</div> :
+      <div className="notice-list">{notices.map(n => <Link className="surface notice-item" href={`/notices/${n.id}`} key={n.id}><div><h2>{n.title}</h2><p>{n.createdAtIso ? new Date(n.createdAtIso).toLocaleDateString("ko-KR") : ""}</p></div><span aria-hidden>↗</span></Link>)}</div>}
+  </main>;
+}

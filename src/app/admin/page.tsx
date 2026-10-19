@@ -256,6 +256,7 @@ export default function AdminPage() {
           NCMN <span>MEDIA</span>
         </Link>
         <div className="top-actions">
+          <Link className="back-link" href="/admin/content">공지·자료 관리</Link>
           <Link className="back-link" href="/">홈으로</Link>
           {user && (
             <button className="small-button" onClick={logout}>
